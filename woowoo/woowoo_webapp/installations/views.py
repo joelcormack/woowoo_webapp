@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.views.generic import View, ListView, DetailView
-  
 from .models import Installation
   
 class InstallationList(ListView):
@@ -9,7 +8,7 @@ class InstallationList(ListView):
 class InstallationDetail(DetailView):
     model = Installation
 
-class InstallationAdd(View):
-    pass  
+class CreateInstallation(View):
+    pass 
 
 # Create your views here.
