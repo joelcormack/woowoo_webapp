@@ -4,17 +4,16 @@ from django.db import models
 
 class Site(models.Model):
     """Models a site with a site name, closing date, address"""
-    name = models.StringField()
-    address_one = models.StringField()
-    address_two = models.StringField()
-    postcode = models.StringField()
+    name = models.CharField(max_length=30)
+    address_one = models.CharField(max_length=50)
+    address_two = models.CharField(max_length=50)
+    postcode = models.CharField(max_length=10)
 
 class Contact(models.Model):
     """Models a contact of the site with a name, email and phone numbers"""
-    name = models.StringField()
-    email = models.EmailField()
-    phone = models.StringField()
-    mobile = models.StringField()
+    name = models.CharField(max_length=30)
+    email = models.EmailField(max_length=30)
+    phone = models.CharField(max_length=20)
 
 class Installation(models.Model):
     """Models an installation with a date set on creation, installation date,
