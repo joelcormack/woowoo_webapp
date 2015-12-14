@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 
-from .views import InstallationList, InstallationDetail, InstallationAdd
+from .views import InstallationList, InstallationDetail, CreateInstallation
 
 urlpatterns = [
     url(r'^$', InstallationList.as_view()),
