@@ -20,6 +20,6 @@ from .views import InstallationList, InstallationDetail, CreateInstallation
 
 urlpatterns = [
     url(r'^$', InstallationList.as_view()),
-    url(r'^(?P<installation_id>)', InstallationDetail.as_view()),
-    url(r'^add', CreateInstallation.as_view()),
+    #url(r'^(?P<installation_id>)', InstallationDetail.as_view()),
+    url(r'^add/', CreateInstallation.as_view()),
 ]

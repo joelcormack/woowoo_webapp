@@ -1,3 +1,4 @@
 *.swp
 .vagrant
 *.pyc
+settings_secret.py
