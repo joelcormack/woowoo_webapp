@@ -18,6 +18,15 @@ class InstallationDetail(DetailView):
 class CreateInstallation(View):
     def get(self, request):
         potential_id = request.GET.get('pid')
+        data = self.get_data(potential_id)
+        pretty_data = pprint.pformat(data)
+        return HttpResponse(pretty_data)
+
+    def get_data(self, potential_id):
+        """
+        method that retieves potential data in json format
+        using zoho api and returns python dictionary
+        """
         authtoken = settings.ZOHO_AUTHTOKEN
         module_name = 'Potentials'
         params = {'authtoken':authtoken,'scope':'crmapi','criteria':'(Potential ID:'+potential_id+')'}
@@ -27,7 +36,4 @@ class CreateInstallation(View):
         response = urllib2.urlopen(request)
         json_response = response.read()
         data = json.loads(json_response)
-        pretty_data = pprint.pformat(data)
-        return HttpResponse(pretty_data)
-
-
+        return data
