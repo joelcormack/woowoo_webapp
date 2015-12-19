@@ -8,12 +8,17 @@ class Site(models.Model):
     address_one = models.CharField(max_length=50)
     address_two = models.CharField(max_length=50)
     postcode = models.CharField(max_length=10)
+    def __unicode__(self):
+        return self.name
 
 class Contact(models.Model):
     """Models a contact of the site with a name, email and phone numbers"""
     name = models.CharField(max_length=30)
     email = models.EmailField(max_length=30)
     phone = models.CharField(max_length=20)
+    def __unicode__(self):
+        return self.name
+
 
 class Installation(models.Model):
     """Models an installation with a date set on creation, installation date,
@@ -30,3 +35,6 @@ class Installation(models.Model):
     retailer_confirmed = models.BooleanField(default=False)
     sites = models.ForeignKey('Site', on_delete=models.CASCADE)
     contacts = models.ForeignKey('Contact', on_delete=models.CASCADE)
+
+    def __unicode__(self):
+        return self.name
