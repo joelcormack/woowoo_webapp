@@ -31,6 +31,7 @@ class CreateInstallation(View):
         """
         self.add_site(potential_data)
         self.add_contact(contact_data)
+        self.add_installation(potential_data, contact_data)
         return HttpResponse("ok")
 
     def get_record_data(self, module_name, record_id):
@@ -60,7 +61,9 @@ class CreateInstallation(View):
             value = set['val']
             content = set['content']
 
-            if value == 'Potential Name':
+            if value == 'POTENTIALID':
+                p_data['potential_id'] = content
+            elif value == 'Potential Name':
                 p_data['potential_name'] = content
             elif value == 'Site Street':
                 p_data['site_address'] = content
@@ -82,7 +85,9 @@ class CreateInstallation(View):
             value = set['val']
             content = set['content']
 
-            if value == 'First Name':
+            if value == 'CONTACTID':
+                c_data['contact_id'] = content
+            elif value == 'First Name':
                 c_data['first_name'] = content
             elif value == 'Last Name':
                 c_data['last_name'] = content
@@ -95,6 +100,7 @@ class CreateInstallation(View):
 
     def add_site(self, data):
         site = Site(
+                id = data['potential_id'],
                 name = data['potential_name'],
                 address_one = data['site_address'],
                 address_two = data['site_address_two'],
@@ -104,8 +110,18 @@ class CreateInstallation(View):
 
     def add_contact(self, data):
         contact = Contact(
+                id = data['contact_id'],
                 name = data['first_name']+" "+data['last_name'],
                 phone = data['phone'],
                 email = data['email'])
         contact.save()
         print "Added contact : ", contact
+    def add_installation(self, pot_data, con_data):
+        pk = pot_data['potential_id']
+        site = Site.objects.get(pk=pk)
+        contact = Contact.objects.get(pk=con_data['contact_id'])
+        installation = Installation(
+              sites = site,
+              contacts = contact)
+        installation.save()
+        print installation
