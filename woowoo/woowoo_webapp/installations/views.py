@@ -18,7 +18,7 @@ class InstallationDetail(DetailView):
 class CreateInstallation(View):
     def get(self, request):
         """
-        retireve and extract data
+        retrieve and extract data
         """
         potential_id = request.GET.get('pid')
         potential = self.get_record_data("Potentials", potential_id)
@@ -27,15 +27,16 @@ class CreateInstallation(View):
         contact_data = self.extract_contact_data(contact)
         pretty_data = pprint.pformat(potential_data) + pprint.pformat(contact_data)
         """
-        create instaces with data
+        create instances with data
         """
         self.add_site(potential_data)
-        return HttpResponse(pretty_data)
+        self.add_contact(contact_data)
+        return HttpResponse("ok")
 
     def get_record_data(self, module_name, record_id):
         """
         retieves potential data in json format
-        using zoho api and returns python dictionary
+        from zoho api and returns a python dictionary
         """
         authtoken = settings.ZOHO_AUTHTOKEN
         params = {'authtoken':authtoken,'scope':'crmapi','id':record_id}
@@ -51,6 +52,9 @@ class CreateInstallation(View):
             print "Incorrect json response structure from zoho API", Argument
 
     def extract_potential_data(self, potential_json):
+        """
+        extract the potential data we need for our models
+        """
         p_data = {}
         for set in potential_json:
             value = set['val']
@@ -70,6 +74,9 @@ class CreateInstallation(View):
         return p_data
 
     def extract_contact_data(self, contact_json):
+        """
+        extract the potential data we need for our models
+        """
         c_data = {}
         for set in contact_json:
             value = set['val']
@@ -85,6 +92,7 @@ class CreateInstallation(View):
                 c_data['email'] = content
 
         return c_data
+
     def add_site(self, data):
         site = Site(
                 name = data['potential_name'],
@@ -92,4 +100,12 @@ class CreateInstallation(View):
                 address_two = data['site_address_two'],
                 postcode = data['site_postcode'])
         site.save()
-        print site
+        print "Added site : ", site
+
+    def add_contact(self, data):
+        contact = Contact(
+                name = data['first_name']+" "+data['last_name'],
+                phone = data['phone'],
+                email = data['email'])
+        contact.save()
+        print "Added contact : ", contact
