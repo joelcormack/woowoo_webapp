@@ -2,6 +2,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import View, ListView, DetailView
+from django.core.mail import send_mail
 from .models import Installation, Site, Contact
 
 import urllib
@@ -32,6 +33,32 @@ class CreateInstallation(View):
         self.add_site(potential_data)
         self.add_contact(contact_data)
         self.add_installation(potential_data, contact_data)
+        """
+        send email to contractor
+        """
+        body="""
+Hi Jake,
+
+An order has come through for a toilet installation, could you please confirm that the week beginning %s is ok for you for an installation?
+Please confirm by clicking the below link.
+
+<a href="%s">YES</a>
+
+Otherwise to choose another week click the following link.
+
+<a hfre="%s">NO</a>
+
+Thanks,
+
+Woo Woo Web App
+"""
+
+        send_mail('Please confirm this provisional date',
+                body,
+                'auto@waterlesstoilet.co.uk',
+                ['contractor@waterlesstoilets.co.uk'],
+                fail_silently=False)
+
         return HttpResponse("ok")
 
     def get_record_data(self, module_name, record_id):
@@ -116,6 +143,7 @@ class CreateInstallation(View):
                 email = data['email'])
         contact.save()
         print "Added contact : ", contact
+
     def add_installation(self, pot_data, con_data):
         pk = pot_data['potential_id']
         site = Site.objects.get(pk=pk)
@@ -124,4 +152,4 @@ class CreateInstallation(View):
               sites = site,
               contacts = contact)
         installation.save()
-        print installation
+        print "Added installation at site : ", installation
