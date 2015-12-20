@@ -162,3 +162,8 @@ Woo Woo Web App
                 contacts = contact)
         installation.save()
         print "Added installation at site : ", installation
+
+class ContractorConfirmation(View):
+    def get(self, request):
+        answer = request.GET.get('confirm')
+        return HttpResponse(answer)
