@@ -37,14 +37,15 @@ class CreateInstallation(View):
             self.add_contact(contact_data)
             self.add_installation(potential_data, contact_data)
         """
-        send email to contractor
+        create provisional date
         """
         def next_weekday(day, weekday):
             days_ahead = weekday - day.weekday()
             if days_ahead <= 0: # Target day already happened this week
                 days_ahead += 7
             return day + timedelta(days_ahead)
-        installation = Installation.objects.get(pk=potential_data['potential_id'])
+        pk = potential_data['potential_id']
+        installation = Installation.objects.get(pk=pk)
         provisional_date = installation.created_date
         print "date created: ", provisional_date
         prov_date_buffer = timedelta(days=42)
@@ -52,7 +53,16 @@ class CreateInstallation(View):
         print "6 weeks ahead : ", provisional_date
         provisional_date = next_weekday(provisional_date, 0)
         print "next monday from date: ", provisional_date
-
+        """
+        email links for contractor
+        """
+        base_url = 'http://localhost:8080/installations/'
+        contractor = "/contractor/"
+        yes_link = base_url + pk + contractor + "?confirm=yes"
+        no_link = base_url + pk + contractor + "?confirm=no"
+        """
+        send email to contractor
+        """
         body="""
 Hi Jake,
 
@@ -68,7 +78,7 @@ Otherwise to choose another week click the following link.
 Thanks,
 
 Woo Woo Web App
-""" % (provisional_date, provisional_date, provisional_date)
+""" % (provisional_date, yes_link, no_link)
 
         send_mail('Please confirm this provisional date',
                 body,
