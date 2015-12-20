@@ -174,6 +174,14 @@ Woo Woo Web App
         print "Added installation at site : ", installation
 
 class ContractorConfirmation(View):
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
+        installation_id = self.kwargs.get('installation_id')
+        installation = Installation.objects.get(id=installation_id)
         answer = request.GET.get('confirm')
-        return HttpResponse(answer)
+        if answer == 'yes':
+            installation.contractor_confirmed = True
+        else:
+            #redirect contractor to form to pick date that suits them
+            print "contractor not confirmed"
+
+        return HttpResponse(installation.contractor_confirmed)

@@ -21,6 +21,6 @@ from .views import InstallationList, InstallationDetail, CreateInstallation, Con
 urlpatterns = [
     url(r'^$', InstallationList.as_view()),
     url(r'^(?P<pk>[\d]+)/$', InstallationDetail.as_view(), name='installation-detail'),
-    url(r'^[\d]+/contractor/$', ContractorConfirmation.as_view(), name='contractor-confirmation'),
+    url(r'^(?P<installation_id>[\d]+)/contractor/$', ContractorConfirmation.as_view(), name='contractor-confirmation'),
     url(r'^add/', CreateInstallation.as_view()),
 ]
