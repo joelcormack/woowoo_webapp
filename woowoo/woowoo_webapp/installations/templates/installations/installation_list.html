@@ -1,1 +1,6 @@
 <h1>List of installations:</h1>
+<ul>
+  {% for installation in object_list %}
+  <li><a href="{% url 'installation-detail' installation.id %}">{{ installation.name }}</a></li>
+  {% endfor %}
+</ul>
