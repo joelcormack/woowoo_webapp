@@ -3,6 +3,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import View, ListView, DetailView
 from django.core.mail import send_mail
+
+from datetime import date, timedelta
+
 from .models import Installation, Contact
 
 import urllib
@@ -30,11 +33,26 @@ class CreateInstallation(View):
         """
         create instances with data
         """
-        self.add_contact(contact_data)
-        self.add_installation(potential_data, contact_data)
+        if not Installation.objects.get(pk=potential_data['potential_id']):
+            self.add_contact(contact_data)
+            self.add_installation(potential_data, contact_data)
         """
         send email to contractor
         """
+        def next_weekday(day, weekday):
+            days_ahead = weekday - day.weekday()
+            if days_ahead <= 0: # Target day already happened this week
+                days_ahead += 7
+            return day + timedelta(days_ahead)
+        installation = Installation.objects.get(pk=potential_data['potential_id'])
+        provisional_date = installation.created_date
+        print "date created: ", provisional_date
+        prov_date_buffer = timedelta(days=42)
+        provisional_date += prov_date_buffer
+        print "6 weeks ahead : ", provisional_date
+        provisional_date = next_weekday(provisional_date, 0)
+        print "next monday from date: ", provisional_date
+
         body="""
 Hi Jake,
 
@@ -50,7 +68,7 @@ Otherwise to choose another week click the following link.
 Thanks,
 
 Woo Woo Web App
-"""
+""" % (provisional_date, provisional_date, provisional_date)
 
         send_mail('Please confirm this provisional date',
                 body,
