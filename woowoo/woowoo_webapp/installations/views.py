@@ -1,13 +1,14 @@
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View, ListView, DetailView
 from django.core.mail import send_mail
 
 from datetime import date, timedelta
 
 from .models import Installation, Contact
-
+from .forms import ContractorForm
 import urllib
 import urllib2
 import json
@@ -185,3 +186,23 @@ class ContractorConfirmation(View):
             print "contractor not confirmed"
 
         return HttpResponse(installation.contractor_confirmed)
+
+def get_dates(request, *args, **kwargs):
+    installation_id = kwargs.get('installation_id')
+    if request.method == 'POST':
+        form = ContractorForm(request.POST)
+        if form.is_valid():
+            installation_date = form.cleaned_data.get('installation_date')
+            delivery_date = form.cleaned_data.get('delivery_date')
+            installation = Installation.objects.get(id=installation_id)
+            installation.delivery_date = delivery_date
+            installation.installation_date = installation_date
+            installation.save()
+            return HttpResponseRedirect(reverse('installation-detail', kwargs={'pk': installation_id}))
+    else:
+        form = ContractorForm()
+    return render(
+            request,
+            'installations/installation_dates.html',
+            {'form': form,
+            'installation_id': installation_id})
