@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import View, ListView, DetailView
 from django.core.mail import send_mail
-from .models import Installation, Site, Contact
+from .models import Installation, Contact
 
 import urllib
 import urllib2
@@ -30,7 +30,6 @@ class CreateInstallation(View):
         """
         create instances with data
         """
-        self.add_site(potential_data)
         self.add_contact(contact_data)
         self.add_installation(potential_data, contact_data)
         """
@@ -125,16 +124,6 @@ Woo Woo Web App
 
         return c_data
 
-    def add_site(self, data):
-        site = Site(
-                id = data['potential_id'],
-                name = data['potential_name'],
-                address_one = data['site_address'],
-                address_two = data['site_address_two'],
-                postcode = data['site_postcode'])
-        site.save()
-        print "Added site : ", site
-
     def add_contact(self, data):
         contact = Contact(
                 id = data['contact_id'],
@@ -145,11 +134,13 @@ Woo Woo Web App
         print "Added contact : ", contact
 
     def add_installation(self, pot_data, con_data):
-        pk = pot_data['potential_id']
-        site = Site.objects.get(pk=pk)
         contact = Contact.objects.get(pk=con_data['contact_id'])
         installation = Installation(
-              sites = site,
-              contacts = contact)
+                id = pot_data['potential_id'],
+                name = pot_data['potential_name'],
+                address_one = pot_data['site_address'],
+                address_two = pot_data['site_address_two'],
+                postcode = pot_data['site_postcode'],
+                contacts = contact)
         installation.save()
         print "Added installation at site : ", installation
