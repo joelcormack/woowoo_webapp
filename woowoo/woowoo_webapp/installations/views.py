@@ -9,6 +9,9 @@ from datetime import date, timedelta
 
 from .models import Installation, Contact
 from .forms import ContractorForm
+from .mailing import send_provisional_date, \
+send_installation_and_delivery_form
+
 import urllib
 import urllib2
 import json
@@ -78,31 +81,8 @@ class CreateInstallation(View):
         department = "/contractor/"
         yes_link = base_url + pk + department + "?confirm=yes"
         no_link = base_url + pk + department + "?confirm=no"
-        """
-        send email to contractor
-        """
-        body="""
-Hi Jake,
-
-We've received an order. The provisional week for delivery is %s (6 weeks from now).
-
-Please confirm this is a good week for you to install.
-
-<a href="%s">YES</a>
-
-<a hfre="%s">NO</a>
-
-Thanks,
-
-Woo Woo Web App
-""" % (provisional_date, yes_link, no_link)
-
-        send_mail('Please confirm this provisional date',
-                body,
-                'auto@waterlesstoilet.co.uk',
-                ['contractor@waterlesstoilets.co.uk'],
-                fail_silently=False)
-
+        links = (provisional_date,yes_link, no_link)
+        send_provisional_date(links)
         return HttpResponse("ok")
 
     def get_record_data(self, module_name, record_id):
@@ -183,28 +163,8 @@ class ContractorConfirmation(View):
             base_url = 'http://localhost:8080/installations/'
             department = "/contractor/"
             dates_form_link = base_url + installation_id + department + 'form/'
-
-            """
-            send email to contractor
-            """
-            body="""
-Hi Jake,
-
-Thanks for confirming the installation week %s. Please contact the customer to arrange installation and confirm the dates of delivery and installation in the form linked below.
-
-<a href="%s">Dates Form</a>
-
-Thanks,
-
-Woo Woo Web App
-""" % (installation.provisional_date, dates_form_link)
-
-            send_mail('Installation and Delivery Date Form',
-                body,
-                'auto@waterlesstoilet.co.uk',
-                ['contractor@waterlesstoilets.co.uk'],
-                fail_silently=False)
-
+            links = (installation.provisional_date, dates_form_link)
+            send_installation_and_delivery_form(links)
         else:
             #redirect contractor to form to pick date that suits them
             print "contractor not confirmed"
