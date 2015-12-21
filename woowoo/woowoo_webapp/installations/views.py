@@ -10,7 +10,7 @@ from datetime import date, timedelta
 from .models import Installation, Contact
 from .forms import ContractorForm
 from .mailing import send_provisional_date, \
-send_installation_and_delivery_form
+send_installation_and_delivery_form, send_confirmation_email
 
 import urllib
 import urllib2
@@ -182,6 +182,7 @@ def get_dates(request, *args, **kwargs):
             installation.delivery_date = delivery_date
             installation.installation_date = installation_date
             installation.save()
+            send_confirmation_email((installation.name, installation.name, delivery_date, installation_date))
             return HttpResponseRedirect(reverse('installation-detail', kwargs={'pk': installation_id}))
     else:
         form = ContractorForm()
