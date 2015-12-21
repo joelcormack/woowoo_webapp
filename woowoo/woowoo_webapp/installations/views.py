@@ -67,12 +67,11 @@ class CreateInstallation(View):
         body="""
 Hi Jake,
 
-An order has come through for a toilet installation, could you please confirm that the week beginning %s is ok for you for an installation?
-Please confirm by clicking the below link.
+We've received an order. The provisional week for delivery is %s (6 weeks from now).
+
+Please confirm this is a good week for you to install.
 
 <a href="%s">YES</a>
-
-Otherwise to choose another week click the following link.
 
 <a hfre="%s">NO</a>
 
@@ -103,7 +102,8 @@ Woo Woo Web App
         json_response = response.read()
         data = json.loads(json_response)
         try:
-            return data['response']['result'][module_name]['row']['FL']
+            data = data['response']['result'][module_name]['row']['FL']
+            return data
         except ValueError, Argument:
             print "Incorrect json response structure from zoho API", Argument
 
@@ -111,23 +111,21 @@ Woo Woo Web App
         """
         extract the potential data we need for our models
         """
+        potential_to_installation = {
+                'POTENTIALID':'potential_id',
+                'Potential Name':'potential_name',
+                'Site Street':'site_address',
+                'Site Street 2':'site_address_two',
+                'Site Post Code':'site_postcode',
+                'CONTACTID':'contact_id'}
+
         p_data = {}
         for set in potential_json:
             value = set['val']
             content = set['content']
-
-            if value == 'POTENTIALID':
-                p_data['potential_id'] = content
-            elif value == 'Potential Name':
-                p_data['potential_name'] = content
-            elif value == 'Site Street':
-                p_data['site_address'] = content
-            elif value == 'Site Street 2':
-                p_data['site_address_two'] = content
-            elif value == 'Site Post Code':
-                p_data['site_postcode'] = content
-            elif value == 'CONTACTID':
-                p_data['contact_id'] = content
+            for pot, ins in potential_to_installation.iteritems():
+                if value == pot:
+                    p_data[ins] = content
 
         return p_data
 
