@@ -68,14 +68,16 @@ class CreateInstallation(View):
         provisional_date += prov_date_buffer
         print "6 weeks ahead : ", provisional_date
         provisional_date = next_weekday(provisional_date, 0)
+        installation.provisional_date = provisional_date
+        installation.save()
         print "next monday from date: ", provisional_date
         """
         email links for contractor
         """
         base_url = 'http://localhost:8080/installations/'
-        contractor = "/contractor/"
-        yes_link = base_url + pk + contractor + "?confirm=yes"
-        no_link = base_url + pk + contractor + "?confirm=no"
+        department = "/contractor/"
+        yes_link = base_url + pk + department + "?confirm=yes"
+        no_link = base_url + pk + department + "?confirm=no"
         """
         send email to contractor
         """
@@ -178,6 +180,31 @@ class ContractorConfirmation(View):
         answer = request.GET.get('confirm')
         if answer == 'yes':
             installation.contractor_confirmed = True
+            base_url = 'http://localhost:8080/installations/'
+            department = "/contractor/"
+            dates_form_link = base_url + installation_id + department + 'form/'
+
+            """
+            send email to contractor
+            """
+            body="""
+Hi Jake,
+
+Thanks for confirming the installation week %s. Please contact the customer to arrange installation and confirm the dates of delivery and installation in the form linked below.
+
+<a href="%s">Dates Form</a>
+
+Thanks,
+
+Woo Woo Web App
+""" % (installation.provisional_date, dates_form_link)
+
+            send_mail('Installation and Delivery Date Form',
+                body,
+                'auto@waterlesstoilet.co.uk',
+                ['contractor@waterlesstoilets.co.uk'],
+                fail_silently=False)
+
         else:
             #redirect contractor to form to pick date that suits them
             print "contractor not confirmed"

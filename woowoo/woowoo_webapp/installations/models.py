@@ -29,6 +29,7 @@ class Installation(models.Model):
     created_date = models.DateField(auto_now_add=True)
 
     #unset on creation
+    provisional_date = models.DateField(null=True)
     installation_date = models.DateField(null=True)
     delivery_date = models.DateField(null=True)
     pickup_date = models.DateField(null=True)
