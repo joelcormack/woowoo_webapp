@@ -21,6 +21,20 @@ class InstallationDetail(DetailView):
     model = Installation
 
 class CreateInstallation(View):
+    potential_to_installation = {
+                'POTENTIALID':'potential_id',
+                'Potential Name':'potential_name',
+                'Site Street':'site_address',
+                'Site Street 2':'site_address_two',
+                'Site Post Code':'site_postcode',
+                'CONTACTID':'contact_id'}
+    contact_zoho_to_contact = {
+                'CONTACTID' : 'contact_id',
+                'First Name': 'first_name',
+                'Last Name': 'last_name',
+                'Phone' : 'phone',
+                'Email': 'email'}
+
     def get(self, request):
         """
         retrieve and extract data
@@ -34,7 +48,8 @@ class CreateInstallation(View):
         """
         create instances with data
         """
-        if not Installation.objects.get(pk=potential_data['potential_id']):
+        matches = Installation.objects.filter(pk=potential_data['potential_id'])
+        if matches.count() < 1:
             self.add_contact(contact_data)
             self.add_installation(potential_data, contact_data)
         """
@@ -111,19 +126,11 @@ Woo Woo Web App
         """
         extract the potential data we need for our models
         """
-        potential_to_installation = {
-                'POTENTIALID':'potential_id',
-                'Potential Name':'potential_name',
-                'Site Street':'site_address',
-                'Site Street 2':'site_address_two',
-                'Site Post Code':'site_postcode',
-                'CONTACTID':'contact_id'}
-
         p_data = {}
         for set in potential_json:
             value = set['val']
             content = set['content']
-            for pot, ins in potential_to_installation.iteritems():
+            for pot, ins in CreateInstallation.potential_to_installation.iteritems():
                 if value == pot:
                     p_data[ins] = content
 
@@ -137,37 +144,29 @@ Woo Woo Web App
         for set in contact_json:
             value = set['val']
             content = set['content']
-
-            if value == 'CONTACTID':
-                c_data['contact_id'] = content
-            elif value == 'First Name':
-                c_data['first_name'] = content
-            elif value == 'Last Name':
-                c_data['last_name'] = content
-            elif value == 'Phone':
-                c_data['phone'] = content
-            elif value == 'Email':
-                c_data['email'] = content
+            for contact_zoho, contact in CreateInstallation.contact_zoho_to_contact.iteritems():
+                if value == contact_zoho:
+                    c_data[contact] = content
 
         return c_data
 
     def add_contact(self, data):
         contact = Contact(
-                id = data['contact_id'],
-                name = data['first_name']+" "+data['last_name'],
-                phone = data['phone'],
-                email = data['email'])
+                id = data.get('contact_id',''),
+                name = data.get('first_name', '')+" "+data.get('last_name', ''),
+                phone = data.get('phone',''),
+                email = data.get('email',''))
         contact.save()
         print "Added contact : ", contact
 
     def add_installation(self, pot_data, con_data):
         contact = Contact.objects.get(pk=con_data['contact_id'])
         installation = Installation(
-                id = pot_data['potential_id'],
-                name = pot_data['potential_name'],
-                address_one = pot_data['site_address'],
-                address_two = pot_data['site_address_two'],
-                postcode = pot_data['site_postcode'],
+                id = pot_data.get('potential_id', ''),
+                name = pot_data.get('potential_name', ''),
+                address_one = pot_data.get('site_address', ''),
+                address_two = pot_data.get('site_address_two', ''),
+                postcode = pot_data.get('site_postcode', ''),
                 contacts = contact)
         installation.save()
         print "Added installation at site : ", installation
