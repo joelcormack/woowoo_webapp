@@ -158,16 +158,20 @@ class ContractorConfirmation(View):
         installation_id = self.kwargs.get('installation_id')
         installation = Installation.objects.get(id=installation_id)
         answer = request.GET.get('confirm')
+        base_url = 'http://localhost:8080/installations/'
+        department = "/contractor/"
+        dates_form_link = base_url + installation_id + department + 'form/'
+
         if answer == 'yes':
             installation.contractor_confirmed = True
-            base_url = 'http://localhost:8080/installations/'
-            department = "/contractor/"
-            dates_form_link = base_url + installation_id + department + 'form/'
             links = (installation.provisional_date, dates_form_link)
-            send_installation_and_delivery_form(links)
+            send_installation_and_delivery_form(answer, links)
         else:
             #redirect contractor to form to pick date that suits them
             print "contractor not confirmed"
+            installation.contractor_confirmed = False
+            links = (dates_form_link)
+            send_installation_and_delivery_form(answer, links)
 
         return HttpResponse(installation.contractor_confirmed)
 

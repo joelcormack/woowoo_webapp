@@ -17,15 +17,16 @@ Thanks,
 Woo Woo Web App
 """ % links
 
-    
+
     send_mail('Please confirm this provisional date',
                 body,
                 'auto@waterlesstoilet.co.uk',
                 ['contractor@waterlesstoilets.co.uk'],
                 fail_silently=False)
 
-def send_installation_and_delivery_form(links):
-    body="""
+def send_installation_and_delivery_form(answer, links):
+    if answer == 'yes':
+        body="""
 Hi Jake,
 
 Thanks for confirming the installation week %s. Please contact the customer to arrange installation and confirm the dates of delivery and installation in the form linked below.
@@ -35,7 +36,19 @@ Thanks for confirming the installation week %s. Please contact the customer to a
 Thanks,
 
 Woo Woo Web App
-""" % links 
+""" % links
+    else:
+        body="""
+Hi Jake,
+
+Please contact the customer to arrange dates of delivery and installation in the form linked below.
+
+<a href="%s">Dates Form</a>
+
+Thanks,
+
+Woo Woo Web App
+""" % links
 
     send_mail('Installation and Delivery Date Form',
                 body,
