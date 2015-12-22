@@ -53,11 +53,11 @@ class KashFlow:
             print e
         return receipt_number
      
-    def add_item(self, receipt_number):
+    def add_item(self, receipt_number, quantity, description, price):
         invoice_line = self.client.factory.create('InvoiceLine')
-        invoice_line.Quantity = 1.00
-        invoice_line.Description = 'KL1 + STK'
-        invoice_line.Rate = 2700.00
+        invoice_line.Quantity = quantity
+        invoice_line.Description = description
+        invoice_line.Rate = price
         invoice_line.ChargeType = 842380 #sales code
         invoice_line.VatRate = 0
         invoice_line.VatAmount = 0

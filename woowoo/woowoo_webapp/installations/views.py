@@ -189,7 +189,7 @@ def set_dates(request, *args, **kwargs):
             send_confirmation_email((installation.name, installation.name, delivery_date, installation_date))
             kf = KashFlow()
             rnumb = kf.create_purchase_order()
-            kf.add_item(rnumb)
+            kf.add_item(rnumb, 1.00, 'KL1 + STK', 2700.00)
             kf.add_delivery_address(rnumb,'\nFlat 1, \n25 Crescent Way, \nBrockey, \nSE4 1QL')
             kf.send_purchase_order(rnumb)
             return HttpResponseRedirect(reverse('installation-detail', kwargs={'pk': installation_id}))
