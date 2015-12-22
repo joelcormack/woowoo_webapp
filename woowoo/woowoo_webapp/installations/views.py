@@ -11,7 +11,7 @@ from .models import Installation, Contact
 from .forms import ContractorForm
 from .mailing import send_provisional_date, \
 send_installation_and_delivery_form, send_confirmation_email
-
+from .kashflow import KashFlow
 import urllib
 import urllib2
 import json
@@ -175,7 +175,7 @@ class ContractorConfirmation(View):
 
         return HttpResponse(installation.contractor_confirmed)
 
-def get_dates(request, *args, **kwargs):
+def set_dates(request, *args, **kwargs):
     installation_id = kwargs.get('installation_id')
     if request.method == 'POST':
         form = ContractorForm(request.POST)
@@ -187,6 +187,11 @@ def get_dates(request, *args, **kwargs):
             installation.installation_date = installation_date
             installation.save()
             send_confirmation_email((installation.name, installation.name, delivery_date, installation_date))
+            kf = KashFlow()
+            rnumb = kf.create_purchase_order()
+            kf.add_item(rnumb)
+            kf.add_delivery_address(rnumb,'\nFlat 1, \n25 Crescent Way, \nBrockey, \nSE4 1QL')
+            kf.send_purchase_order(rnumb)
             return HttpResponseRedirect(reverse('installation-detail', kwargs={'pk': installation_id}))
     else:
         form = ContractorForm()
