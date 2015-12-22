@@ -187,8 +187,9 @@ def set_dates(request, *args, **kwargs):
             installation.installation_date = installation_date
             installation.save()
             send_confirmation_email((installation.name, installation.name, delivery_date, installation_date))
+            #send purchase order
             kf = KashFlow()
-            rnumb = kf.create_purchase_order()
+            rnumb = kf.create_purchase_order(installation.name)
             kf.add_item(rnumb, 1.00, 'KL1 + STK', 2700.00)
             kf.add_delivery_address(rnumb,'\nFlat 1, \n25 Crescent Way, \nBrockey, \nSE4 1QL')
             kf.send_purchase_order(rnumb)

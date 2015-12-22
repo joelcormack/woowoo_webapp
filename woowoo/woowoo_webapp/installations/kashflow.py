@@ -20,7 +20,7 @@ class KashFlow:
 
         self.client = Client(url)
     
-    def create_purchase_order(self):
+    def create_purchase_order(self, ref):
         invoice = self.client.factory.create('Invoice')
         invoice.InvoiceDBID = 0 
         invoice.InvoiceNumber = 0 
@@ -29,7 +29,7 @@ class KashFlow:
         invoice.Customer = self.supplier 
         invoice.CustomerID = self.supplier_id
         invoice.Paid = 0 
-        invoice.CustomerReference = 'Test Purchase Order' 
+        invoice.CustomerReference = ref
         invoice.EstimateCategory = ''
         invoice.SuppressTotal = 0 
         invoice.ProjectID = 0 
