@@ -96,3 +96,4 @@ class KashFlow:
         except WebFault, e:
             print e
         print "trying with purchase number: ", emailed_purchase_order
+        #return emailed_purchased_order.Status

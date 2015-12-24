@@ -84,4 +84,29 @@ Woo Woo Web App
                 ['james@waterlesstoilets.co.uk', 'jake@waterlesstoilets.co.uk'],
                 fail_silently=False)
 
+def send_kazuba_pickup_date(links):
+    body="""
+Hello Kazuba,
+
+Installation and delivery dates have been confirmed with customer and contractor and a purchase order has been sent to you. Please see details below and confirm the the pickup date.
+
+Name of site: %s
+Pikup Date: %s
+
+
+Is the pickup date good for you?
+
+<a href="%s">yes</a>
+<a href="%s">no</a>
+
+Thanks,
+
+Woo Woo Web App
+""" % links
+    send_mail('Installation and Delivery Confirmation',
+                body,
+                'auto@waterlesstoilet.co.uk',
+                ['james@waterlesstoilets.co.uk', 'jake@waterlesstoilets.co.uk'],
+                fail_silently=False)
+
 

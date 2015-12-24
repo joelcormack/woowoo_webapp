@@ -197,7 +197,13 @@ def set_dates(request, *args, **kwargs):
             rnumb = kf.create_purchase_order(installation.name)
             kf.add_item(rnumb, 1.00, 'KL1 + STK', 2700.00)
             kf.add_delivery_address(rnumb,'\nFlat 1, \n25 Crescent Way, \nBrockey, \nSE4 1QL')
-            kf.send_purchase_order(rnumb)
+            po_confirmation = kf.send_purchase_order(rnumb)
+            base_url = 'http://localhost:8080/installations/'
+            department = "/retailer/"
+            yes_link = base_url + pk + department + "?confirm=yes"
+            no_link = base_url + pk + department + "?confirm=no"
+            links = (installation.name, '20/20/19', yes_link, no_link )
+            send_kazuba_pickup_date(links)
             return HttpResponseRedirect(reverse('installation-detail', kwargs={'pk': installation_id}))
     else:
         form = ContractorForm()
@@ -206,3 +212,17 @@ def set_dates(request, *args, **kwargs):
             'installations/installation_dates.html',
             {'form': form,
             'installation_id': installation_id})
+
+class RetailerConfirmation(View):
+    def get(self, request, *args, **kwargs):
+        installation_id = self.kwargs.get('installation_id')
+        installation = Installation.objects.get(id=installation_id)
+        answer = request.GET.get('confirm')
+        if answer == 'yes':
+            installation.retailer_confirmed = True
+        else:
+            #redirect contractor to form to pick date that suits them
+            print "contractor not confirmed"
+            installation.retailer_confirmed = False
+
+        return HttpResponse(installation.retailer_confirmed)
