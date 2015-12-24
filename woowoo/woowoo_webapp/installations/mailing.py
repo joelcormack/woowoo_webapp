@@ -31,6 +31,10 @@ Hi Jake,
 
 Thanks for confirming the installation week %s. Please contact the customer to arrange installation and confirm the dates of delivery and installation in the form linked below.
 
+Custom name: %s
+%s
+<a href="mailto:%s">%s</a>
+
 <a href="%s">Dates Form</a>
 
 Thanks,
@@ -41,7 +45,11 @@ Woo Woo Web App
         body="""
 Hi Jake,
 
-Please contact the customer to arrange dates of delivery and installation in the form linked below.
+As the week beginning %s is not suitable, please contact the customer to arrange dates of delivery and installation and input them into the form linked below.
+
+Custom name: %s
+%s
+<a href="mailto:%s">%s</a>
 
 <a href="%s">Dates Form</a>
 

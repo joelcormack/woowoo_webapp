@@ -164,7 +164,12 @@ class ContractorConfirmation(View):
 
         if answer == 'yes':
             installation.contractor_confirmed = True
-            links = (installation.provisional_date, dates_form_link)
+            links = (installation.provisional_date,
+                    installation.contacts.name,
+                    installation.contacts.phone,
+                    installation.contacts.email,
+                    installation.contacts.email,
+                    dates_form_link)
             send_installation_and_delivery_form(answer, links)
         else:
             #redirect contractor to form to pick date that suits them
