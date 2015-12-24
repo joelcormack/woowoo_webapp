@@ -220,6 +220,11 @@ class RetailerConfirmation(View):
         answer = request.GET.get('confirm')
         if answer == 'yes':
             installation.retailer_confirmed = True
+            kf = KashFlow(supplier='Kuehne + Nagel', supplier_id=2876893)
+            kf.create_purchase_order('some ref')
+            kf.add_item(rnumb, 1.00, 'KL1 + STK', 2700.00)
+            kf.add_delivery_address(rnumb,'\nFlat 1, \n25 Crescent Way, \nBrockey, \nSE4 1QL')
+            po_confirmation = kf.send_purchase_order(rnumb)
         else:
             #redirect contractor to form to pick date that suits them
             print "contractor not confirmed"
