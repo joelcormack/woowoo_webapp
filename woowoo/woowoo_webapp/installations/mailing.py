@@ -109,4 +109,23 @@ Woo Woo Web App
                 ['james@waterlesstoilets.co.uk', 'jake@waterlesstoilets.co.uk'],
                 fail_silently=False)
 
+def send_final_confirmation(links):
+    body="""
+Hello James, customer and contractor,
 
+Installation and delivery dates below have been booked and conrimed. If these are wrong please get in contact otherwise you can view the status of the order here....
+
+Name of site: %s
+Pikup Date: %s
+Delivery Date: %s
+Installation Date: %s
+
+Thanks,
+
+Woo Woo Web App
+""" % links
+    send_mail('Installation and Delivery Confirmation',
+                body,
+                'auto@waterlesstoilet.co.uk',
+                ['james@waterlesstoilets.co.uk', 'jake@waterlesstoilets.co.uk', 'customer@something.com'],
+                fail_silently=False)
