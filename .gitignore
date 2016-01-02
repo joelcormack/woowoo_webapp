@@ -6,5 +6,3 @@ settings_secret.py
 db.sqlite3
 devenv
 testenv
-development_settings.py
-test_settings.py

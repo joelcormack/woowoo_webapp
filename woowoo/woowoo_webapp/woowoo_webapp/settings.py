@@ -25,7 +25,7 @@ SECRET_KEY = ENVIRONMENT_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [u'joelcormack.pythonanywhere.com']
 
 
 # Application definition
@@ -127,4 +127,4 @@ STATICFILES_DIRS = (
         )
 # Email
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
