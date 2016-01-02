@@ -1,4 +1,5 @@
 from django.core.mail import send_mail
+from django.conf import settings
 
 def send_provisional_date(links):
     body="""
@@ -20,8 +21,8 @@ Woo Woo Web App
 
     send_mail('Please confirm this provisional date',
                 body,
-                APPLICATION_EMAIL,
-                [CONTRACTOR_EMAIL],
+                settings.APPLICATION_EMAIL,
+                [settings.CONTRACTOR_EMAIL],
                 fail_silently=False)
 
 def send_installation_and_delivery_form(answer, links):
@@ -60,8 +61,8 @@ Woo Woo Web App
 
     send_mail('Installation and Delivery Date Form',
                 body,
-                APPLICATION_EMAIL,
-                [CONTRACTOR_EMAIL],
+                settings.APPLICATION_EMAIL,
+                [settings.CONTRACTOR_EMAIL],
                 fail_silently=False)
 
 def send_confirmation_email(links):
@@ -80,8 +81,8 @@ Woo Woo Web App
 """ % links
     send_mail('Installation and Delivery Confirmation',
                 body,
-                APPLICATION_EMAIL,
-                [MANAGER_EMAIL, CONTRACTOR_EMAIL],
+                settings.APPLICATION_EMAIL,
+                [settings.MANAGER_EMAIL, settings.CONTRACTOR_EMAIL],
                 fail_silently=False)
 
 def send_kazuba_pickup_date(links):
@@ -105,8 +106,8 @@ Woo Woo Web App
 """ % links
     send_mail('Installation and Delivery Confirmation',
                 body,
-                APPLICATION_EMAIL,
-                [MANAGER_EMAIL, CONTRACTOR_EMAIL],
+                settings.APPLICATION_EMAIL,
+                [settings.MANAGER_EMAIL, settings.CONTRACTOR_EMAIL],
                 fail_silently=False)
 
 def send_final_confirmation(links):
@@ -126,6 +127,6 @@ Woo Woo Web App
 """ % links
     send_mail('Installation and Delivery Confirmation',
                 body,
-                APPLICATION_EMAIL,
-                [MANAGER_EMAIL, CONTRACTOR_EMAIL, CUSTOMER_EMAIL],
+                settings.APPLICATION_EMAIL,
+                [settings.MANAGER_EMAIL, settings.CONTRACTOR_EMAIL, settings.CUSTOMER_EMAIL],
                 fail_silently=False)
