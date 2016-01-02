@@ -5,13 +5,13 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View, ListView, DetailView
 from django.core.mail import send_mail
 
-from datetime import date, timedelta
-
 from .models import Installation, Contact
 from .forms import ContractorForm
-from .mailing import send_provisional_date, \
-send_installation_and_delivery_form, send_confirmation_email
 from .kashflow import KashFlow
+from emails.views import send_provisional_date, \
+send_installation_and_delivery_form, send_confirmation_email
+
+from datetime import date, timedelta
 import urllib
 import urllib2
 import json
@@ -81,8 +81,7 @@ class CreateInstallation(View):
         department = "/contractor/"
         yes_link = base_url + pk + department + "?confirm=yes"
         no_link = base_url + pk + department + "?confirm=no"
-        links = (provisional_date,yes_link, no_link)
-        send_provisional_date(links)
+        send_provisional_date(date=provisional_date, yes=yes_link, no=no_link)
         return HttpResponse("ok")
 
     def get_record_data(self, module_name, record_id):

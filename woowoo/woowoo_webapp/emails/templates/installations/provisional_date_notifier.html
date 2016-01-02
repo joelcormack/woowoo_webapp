@@ -1,0 +1,25 @@
+{% extends "installations/base.html" %}
+{% block content %}
+<h2>Hi {{ recipient }}</h2>
+
+<p>We've received an order. The provisional week for delivery is {{ provisional_date }} (6 weeks from now).</p>
+
+<p>Please confirm this is a good week for you to install.</p>
+
+<p></p>
+
+<table>
+    <tr>
+        <td align="center">
+            <p>
+                <a href="{{ yes_link }}" class="button">Confirm the date</a>
+                <a href="{{ no_link }}" class="button button--red">Pick new date</a>
+            </p>
+        </td>
+    </tr>
+</table>
+
+<p>If there are any errors in this email please tkae a screen shot and email <a href="mailto:joel@joelcormack.com">Joel</a>.</p>
+
+<p><em>– Woo Woo Webapp</em></p>
+{% endblock %}
