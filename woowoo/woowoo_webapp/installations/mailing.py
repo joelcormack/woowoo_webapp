@@ -23,7 +23,8 @@ Woo Woo Web App
                 body,
                 settings.APPLICATION_EMAIL,
                 [settings.CONTRACTOR_EMAIL],
-                fail_silently=False)
+                fail_silently=False,
+		html_message=body)
 
 def send_installation_and_delivery_form(answer, links):
     if answer == 'yes':
