@@ -20,10 +20,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'tj4%#u)mwtw!2)1#u@!ym#b6+!gw4-lm=+j0i2jr$zx7s@t+!@'
+SECRET_KEY = ENVIRONMENT_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -121,7 +121,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATIC_ROOT = 'staticfiles'
+STATICFILES_DIRS = (
+        os.path.join(BASE_DIR,'static'),
+        )
 # Email
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
