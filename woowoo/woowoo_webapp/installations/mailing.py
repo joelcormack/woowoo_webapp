@@ -20,8 +20,8 @@ Woo Woo Web App
 
     send_mail('Please confirm this provisional date',
                 body,
-                'auto@waterlesstoilet.co.uk',
-                ['contractor@waterlesstoilets.co.uk'],
+                APPLICATION_EMAIL,
+                [CONTRACTOR_EMAIL],
                 fail_silently=False)
 
 def send_installation_and_delivery_form(answer, links):
@@ -60,8 +60,8 @@ Woo Woo Web App
 
     send_mail('Installation and Delivery Date Form',
                 body,
-                'auto@waterlesstoilet.co.uk',
-                ['contractor@waterlesstoilets.co.uk'],
+                APPLICATION_EMAIL,
+                [CONTRACTOR_EMAIL],
                 fail_silently=False)
 
 def send_confirmation_email(links):
@@ -80,8 +80,8 @@ Woo Woo Web App
 """ % links
     send_mail('Installation and Delivery Confirmation',
                 body,
-                'auto@waterlesstoilet.co.uk',
-                ['james@waterlesstoilets.co.uk', 'jake@waterlesstoilets.co.uk'],
+                APPLICATION_EMAIL,
+                [MANAGER_EMAIL, CONTRACTOR_EMAIL],
                 fail_silently=False)
 
 def send_kazuba_pickup_date(links):
@@ -105,8 +105,8 @@ Woo Woo Web App
 """ % links
     send_mail('Installation and Delivery Confirmation',
                 body,
-                'auto@waterlesstoilet.co.uk',
-                ['james@waterlesstoilets.co.uk', 'jake@waterlesstoilets.co.uk'],
+                APPLICATION_EMAIL,
+                [MANAGER_EMAIL, CONTRACTOR_EMAIL],
                 fail_silently=False)
 
 def send_final_confirmation(links):
@@ -126,6 +126,6 @@ Woo Woo Web App
 """ % links
     send_mail('Installation and Delivery Confirmation',
                 body,
-                'auto@waterlesstoilet.co.uk',
-                ['james@waterlesstoilets.co.uk', 'jake@waterlesstoilets.co.uk', 'customer@something.com'],
+                APPLICATION_EMAIL,
+                [MANAGER_EMAIL, CONTRACTOR_EMAIL, CUSTOMER_EMAIL],
                 fail_silently=False)
