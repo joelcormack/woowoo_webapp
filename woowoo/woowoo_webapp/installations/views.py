@@ -9,7 +9,8 @@ from .models import Installation, Contact
 from .forms import ContractorForm
 from .kashflow import KashFlow
 from emails.views import send_provisional_date, \
-send_installation_and_delivery_form, send_confirmation_email
+send_installation_and_delivery_form, send_confirmation_email, \
+send_kazuba_pickup_date
 
 from datetime import date, timedelta
 import urllib
@@ -199,6 +200,7 @@ def set_dates(request, *args, **kwargs):
             po_confirmation = kf.send_purchase_order(rnumb)
             base_url = 'http://localhost:8080/installations/'
             department = "/retailer/"
+            pk = installation.id
             yes_link = base_url + pk + department + "?confirm=yes"
             no_link = base_url + pk + department + "?confirm=no"
             links = (installation.name, '20/20/19', yes_link, no_link )
@@ -220,7 +222,7 @@ class RetailerConfirmation(View):
         if answer == 'yes':
             installation.retailer_confirmed = True
             kf = KashFlow(supplier='Kuehne + Nagel', supplier_id=2876893)
-            kf.create_purchase_order('some ref')
+            rnumb = kf.create_purchase_order('some ref')
             kf.add_item(rnumb, 1.00, 'KL1 + STK', 2700.00)
             kf.add_delivery_address(rnumb,'\nFlat 1, \n25 Crescent Way, \nBrockey, \nSE4 1QL')
             po_confirmation = kf.send_purchase_order(rnumb)

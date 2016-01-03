@@ -1,5 +1,31 @@
-<form action="{% url 'contractor-dates' installation_id %}" method="post">
+{% extends 'installations/base.html' %}
+{% load static %}
+{% load bootstrap %}
+
+{% block script %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="{% static 'installations/style.css' %}">
+<script>
+  $(function() {
+    $(".datepicker").datepicker({
+      numberOfMonths: 1,
+      showButtonPanel: true
+    });
+  });
+</script>
+{% endblock %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<form class="form-signin" action="{% url 'contractor-dates' installation_id %}" method="post">
+  <h2 class="form-signin-heading">Mulberry Road Allotments</h2>
   {% csrf_token %}
-  {{ form }}
-  <input type="submit" value="Submit" />
+  {{ form|bootstrap }}
+  <div class="form-group">
+    <input class="btn btn-primary btn-block" type="submit" value="Submit" />
+  </div>
 </form>
+{% endblock %}

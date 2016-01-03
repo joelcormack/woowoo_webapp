@@ -31,6 +31,7 @@ ALLOWED_HOSTS = [u'joelcormack.pythonanywhere.com']
 # Application definition
 
 INSTALLED_APPS = [
+    'bootstrapform',
     'emails.apps.EmailsConfig',
     'installations.apps.InstallationsConfig',
     'django.contrib.admin',
