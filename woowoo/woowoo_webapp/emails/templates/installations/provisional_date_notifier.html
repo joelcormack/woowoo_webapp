@@ -2,7 +2,7 @@
 {% block content %}
 <h2>Hi {{ recipient }}</h2>
 
-<p>We've received an order. The provisional week for delivery is {{ provisional_date }} (6 weeks from now).</p>
+<p>We've received an order. The provisional week for delivery is {{ date }} (6 weeks from now).</p>
 
 <p>Please confirm this is a good week for you to install.</p>
 
@@ -12,8 +12,8 @@
     <tr>
         <td align="center">
             <p>
-                <a href="{{ yes_link }}" class="button">Confirm the date</a>
-                <a href="{{ no_link }}" class="button button--red">Pick new date</a>
+                <a href="{{ yes }}" class="button">Confirm the date</a>
+                <a href="{{ no }}" class="button button--red">Pick new date</a>
             </p>
         </td>
     </tr>
