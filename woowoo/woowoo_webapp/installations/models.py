@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+import re
 
 class Contact(models.Model):
     """
@@ -35,6 +36,7 @@ class Installation(models.Model):
     pickup_date = models.DateField(null=True)
     contractor_confirmed = models.BooleanField(default=False)
     haulier_confirmed = models.BooleanField(default=False)
+    haulier_receipt = models.FileField(upload_to='haulier_receipts/%Y/%m/%d', null=True)
     customer_confirmed = models.BooleanField(default=False)
     retailer_confirmed = models.BooleanField(default=False)
 
@@ -43,3 +45,47 @@ class Installation(models.Model):
 
     def __unicode__(self):
         return self.name
+
+from django_mailbox.signals import message_received
+from django.dispatch import receiver
+from installations.pdf_date_extractor import extract_dates
+@receiver(message_received)
+def match_receipt(sender, message, **args):
+    """
+    extract dates from attached reciept to match an exsiting
+    installation as confirmation from haulier
+    """
+    if file_is_pdf(message.attachments.first()):
+        dates = extract_dates(message)
+        print "dates returned = " , dates
+        match_dates(message,dates)
+
+def match_dates(message,dates):
+    installations = Installation.objects.filter(
+                contractor_confirmed=True
+            ).filter(
+                haulier_confirmed=False)
+    for installation in installations:
+        import ipdb; ipdb.set_trace()
+        if installation.installation_date.strftime("%d/%m/%Y") == dates[0]:
+            print "matched installation date"
+            if installation.delivery_date.strftime("%d/%m/%Y") == dates[1]:
+                print "matched delivery date"
+                attachment = message.attachments.first()
+                installation.haulier_receipt = attachment.document.url
+                installation.haulier_confirmed = True
+                installation.save()
+                print "saved haulier receipt for %s, haulier_confirmed = %s, hauiler_receipt = %s" % (
+                        installation,
+                        installation.haulier_confirmed,
+                        installation.haulier_receipt)
+
+def file_is_pdf(filename):
+    if re.search('\.pdf$', filename.get_filename()):
+        return True
+    else:
+        print "File is not a pdf"
+        return False
+
+
+    print "I just recieved a message titled %s from a mailbox named %s" % (message.subject, message.mailbox.name, )

@@ -23,7 +23,7 @@ Hi Jake,
 
 Thanks for confirming the installation week %s. Please contact the customer to arrange installation and confirm the dates of delivery and installation in the form linked below.
 
-Custom name: %s
+Customer name: %s
 %s
 <a href="mailto:%s">%s</a>
 

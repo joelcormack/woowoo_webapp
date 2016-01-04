@@ -31,6 +31,7 @@ ALLOWED_HOSTS = [u'joelcormack.pythonanywhere.com']
 # Application definition
 
 INSTALLED_APPS = [
+    'django_mailbox',
     'bootstrapform',
     'emails.apps.EmailsConfig',
     'installations.apps.InstallationsConfig',
@@ -130,3 +131,5 @@ STATICFILES_DIRS = (
 # Email
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# django-mailbox
+DJANGO_MAILBOX_ATTACHMENT_UPLOAD_TO='mailbox_attachments/'

@@ -3,20 +3,23 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 from cStringIO import StringIO
-
+from django_mailbox.models import Message, MessageAttachment
 import re
 
-def extract(filename):
+def extract_dates(message):
     """
     extracts two specifically formatted dates from pdf file
     """
-    rsrcmgr = PDFResourceManager()
+    attachment = message.attachments.first()
+    filename = attachment.document.url
+    fp = open(filename, 'rb')
+    resman = PDFResourceManager()
     retstr = StringIO()
     codec = 'utf-8'
     laparams = LAParams()
-    device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
-    fp = file(filename, 'rb')
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
+    device = TextConverter(resman, retstr, codec=codec, laparams=laparams)
+    #fp = file(filename, 'rb')
+    interpreter = PDFPageInterpreter(resman, device)
     password = ""
     maxpages = 0
     caching = True
@@ -41,5 +44,5 @@ def extract(filename):
     dates = []
     for group in le_date:
         print group
-        dates += group
+        dates.append(group)
     return dates

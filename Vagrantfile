@@ -73,8 +73,5 @@ Vagrant.configure(2) do |config|
      sudo apt-get upgrade
      sudo apt-get autoremove
      sudo apt-get install -y virtualenvwrapper
-     bash
-     mkvirtualenv python27 -p `which python`
-     pip install -r /vagrant/woowoo/requirements.txt
   SHELL
 end
