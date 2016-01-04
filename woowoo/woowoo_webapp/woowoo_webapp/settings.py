@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [u'joelcormack.pythonanywhere.com']
 
 INSTALLED_APPS = [
     'django_mailbox',
+    'django_premailer',
     'bootstrapform',
     'emails.apps.EmailsConfig',
     'installations.apps.InstallationsConfig',

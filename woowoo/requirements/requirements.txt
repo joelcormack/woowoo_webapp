@@ -6,14 +6,16 @@ decorator==4.0.6
 django-filter==0.11.0
 django-mailbox==4.4.5
 djangorestframework==3.3.2
+django-premailer
 ipdb==0.8.1
 ipython==4.0.1
 ipython-genutils==0.1.0
+lxml>=3
 path.py==8.1.2
+pdfminer>=3
 pexpect==4.0.1
 pickleshare==0.5
 ptyprocess==0.5
-pdfminer>=3
 requests==2.9.0
 simplegeneric==0.8.1
 six==1.10.0

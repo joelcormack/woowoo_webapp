@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 
 
 def send_provisional_date(date, yes, no):
-    msg_html = render_to_string('installations/provisional_date_notifier_inline.html', {
+    msg_html = render_to_string('emails/provisional_date_notifier.html', {
         'recipient': 'Jake',
         'yes' : yes,
         'no': no,

@@ -1,5 +1,6 @@
 {% extends "emails/base.html" %}
 {% block content %}
+
 <h2>Hi {{ recipient }}</h2>
 
 <p>We've received an order. The provisional week for delivery is {{ date }} (6 weeks from now).</p>
@@ -13,13 +14,17 @@
         <td align="center">
             <p>
                 <a href="{{ yes }}" class="button">Confirm the date</a>
+            </p>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td align="center">
+            <p>
                 <a href="{{ no }}" class="button button--red">Pick new date</a>
             </p>
         </td>
     </tr>
 </table>
-
-<p>If there are any errors in this email please take a screen shot and email <a href="mailto:joel@joelcormack.com">Joel</a>.</p>
-
-<p><em>– Woo Woo Webapp</em></p>
 {% endblock %}
