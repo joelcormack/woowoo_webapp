@@ -1,6 +1,6 @@
 from django.core.mail import send_mail
 from django.conf import settings
-from django.template.loader import render_to_string 
+from django.template.loader import render_to_string
 
 
 def send_provisional_date(date, yes, no):
@@ -10,51 +10,36 @@ def send_provisional_date(date, yes, no):
         'no': no,
         'date' : date})
     send_mail('Please confirm this provisional date',
-                'bill',
-                settings.APPLICATION_EMAIL,
-                [settings.CONTRACTOR_EMAIL],
-                fail_silently=False,
-		html_message=msg_html)
+        'bill',
+        settings.APPLICATION_EMAIL,
+        [settings.CONTRACTOR_EMAIL],
+        fail_silently=False,
+	html_message=msg_html)
 
-def send_installation_and_delivery_form(answer, links):
+def send_installation_and_delivery_form(answer, date,  name, number, email, form):
     if answer == 'yes':
-        body="""
-Hi Jake,
-
-Thanks for confirming the installation week %s. Please contact the customer to arrange installation and confirm the dates of delivery and installation in the form linked below.
-
-Customer name: %s
-%s
-<a href="mailto:%s">%s</a>
-
-<a href="%s">Dates Form</a>
-
-Thanks,
-
-Woo Woo Web App
-""" % links
+        msg_html = render_to_string('emails/installation_and_delivery_form_notifier.html', {
+            'recipient': 'Jake',
+            'date': date,
+            'customer_name': name,
+            'number':number,
+            'email': email,
+            'form': form})
     else:
-        body="""
-Hi Jake,
-
-As the week beginning %s is not suitable, please contact the customer to arrange dates of delivery and installation and input them into the form linked below.
-
-Custom name: %s
-%s
-<a href="mailto:%s">%s</a>
-
-<a href="%s">Dates Form</a>
-
-Thanks,
-
-Woo Woo Web App
-""" % links
+        msg_html = render_to_string('emails/installation_and_delivery_form_notifier_answer_no.html', {
+            'recipient': 'Jake',
+            'date': date,
+            'customer_name': name,
+            'number':number,
+            'email': email,
+            'form': form})
 
     send_mail('Installation and Delivery Date Form',
-                body,
-                settings.APPLICATION_EMAIL,
-                [settings.CONTRACTOR_EMAIL],
-                fail_silently=False)
+        'bill',
+        settings.APPLICATION_EMAIL,
+        [settings.CONTRACTOR_EMAIL],
+        fail_silently=False,
+        html_message=msg_html)
 
 def send_confirmation_email(links):
     body="""
