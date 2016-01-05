@@ -10,7 +10,7 @@ from .forms import ContractorForm
 from .kashflow import KashFlow
 from emails.views import send_provisional_date, \
 send_installation_and_delivery_form, send_confirmation_email, \
-send_retailer_pickup_date
+send_retailer_pickup_date, send_installation_exists_notifier
 
 from datetime import date, timedelta
 import urllib
@@ -40,25 +40,27 @@ class CreateInstallation(View):
                 'Email': 'email'}
 
     def get(self, request):
-        """
-        retrieve and extract data
-        """
+        """retrieve and extract potential data"""
         potential_id = request.GET.get('pid')
         potential = self.get_record_data("Potentials", potential_id)
         potential_data = self.extract_potential_data(potential)
+
+        """retrieve and extract contact data"""
         contact = self.get_record_data("Contacts", potential_data.get('contact_id'))
         contact_data = self.extract_contact_data(contact)
-        pretty_data = pprint.pformat(potential_data) + pprint.pformat(contact_data)
-        """
-        create instances with data
-        """
+
+        """create instances with data"""
         matches = Installation.objects.filter(pk=potential_data['potential_id'])
         if matches.count() < 1:
             self.add_contact(contact_data)
-            self.add_installation(potential_data, contact_data)
-        """
-        create provisional date
-        """
+            self.add_installation(potential_data)
+        else:
+            print "Installation with that potential ID has already been added"
+            match = matches.first()
+            send_installation_exists_notifier(recipient=settings.MANAGER, installation=match, pid=potential_id)
+            return HttpResponse('Installation already exisits with that ID', status=202)
+
+        """create provisional date"""
         def next_weekday(day, weekday):
             days_ahead = weekday - day.weekday()
             if days_ahead <= 0: # Target day already happened this week
@@ -141,15 +143,14 @@ class CreateInstallation(View):
         contact.save()
         print "Added contact : ", contact
 
-    def add_installation(self, pot_data, con_data):
-        contact = Contact.objects.get(pk=con_data['contact_id'])
+    def add_installation(self, pot_data):
         installation = Installation(
                 id = pot_data.get('potential_id', ''),
                 name = pot_data.get('potential_name', ''),
                 address_one = pot_data.get('site_address', ''),
                 address_two = pot_data.get('site_address_two', ''),
                 postcode = pot_data.get('site_postcode', ''),
-                contacts = contact)
+                contacts = Contact.objects.get(pk=pot_data['contact_id']))
         installation.save()
         print "Added installation at site : ", installation
 

@@ -2,6 +2,18 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 
+def send_installation_exists_notifier(recipient, installation, pid):
+    msg_html = render_to_string('emails/installation_exists_notifier.html', {
+        'recipient': recipient,
+        'pid': pid,
+        'installation' : installation})
+    send_mail('Installation already exists',
+        'bill',
+        settings.APPLICATION_EMAIL,
+        [settings.MANAGER_EMAIL],
+        fail_silently=False,
+	html_message=msg_html)
+
 
 def send_provisional_date(date, yes, no):
     msg_html = render_to_string('emails/provisional_date_notifier.html', {

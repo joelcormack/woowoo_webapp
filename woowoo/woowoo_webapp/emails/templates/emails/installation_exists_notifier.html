@@ -1,0 +1,14 @@
+{% extends "emails/base.html" %}
+{% block content %}
+
+<h2>Hi {{ recipient }}</h2>
+
+<p>
+  A potential has been updated on Zoho and was sent to
+  the web application for processing however it appears 
+  that it already exists in the database.
+</p>
+
+<p>Existing installation: {{ installation }}</p>
+<p>Zoho potential ID: {{ pid }}</p>
+{% endblock %}
