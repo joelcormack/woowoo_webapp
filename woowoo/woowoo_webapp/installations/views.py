@@ -10,7 +10,7 @@ from .forms import ContractorForm
 from .kashflow import KashFlow
 from emails.views import send_provisional_date, \
 send_installation_and_delivery_form, send_confirmation_email, \
-send_kazuba_pickup_date
+send_retailer_pickup_date
 
 from datetime import date, timedelta
 import urllib
@@ -175,8 +175,13 @@ class ContractorConfirmation(View):
             #redirect contractor to form to pick date that suits them
             print "contractor not confirmed"
             installation.contractor_confirmed = False
-            links = (dates_form_link)
-            send_installation_and_delivery_form(answer, links)
+            send_installation_and_delivery_form(
+                    answer=answer,
+                    date=installation.provisional_date,
+                    name=installation.contacts.name,
+                    number=installation.contacts.phone,
+                    email=installation.contacts.email,
+                    form=dates_form_link)
 
         return HttpResponse(installation.contractor_confirmed)
 
@@ -191,7 +196,10 @@ def set_dates(request, *args, **kwargs):
             installation.delivery_date = delivery_date
             installation.installation_date = installation_date
             installation.save()
-            send_confirmation_email((installation.name, installation.name, delivery_date, installation_date))
+            send_confirmation_email(
+                site_name=installation.name,
+                delivery_date=delivery_date,
+                installation_date=installation_date)
             #send purchase order
             kf = KashFlow()
             rnumb = kf.create_purchase_order(installation.name)
@@ -203,8 +211,11 @@ def set_dates(request, *args, **kwargs):
             pk = installation.id
             yes_link = base_url + pk + department + "?confirm=yes"
             no_link = base_url + pk + department + "?confirm=no"
-            links = (installation.name, '20/20/19', yes_link, no_link )
-            send_kazuba_pickup_date(links)
+            send_retailer_pickup_date(
+                    site_name=installation.name,
+                    pickup_date='20/20/19',
+                    yes_link=yes_link,
+                    no_link=no_link)
             return HttpResponseRedirect(reverse('installation-detail', kwargs={'pk': installation_id}))
     else:
         form = ContractorForm()

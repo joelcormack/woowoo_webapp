@@ -41,50 +41,34 @@ def send_installation_and_delivery_form(answer, date,  name, number, email, form
         fail_silently=False,
         html_message=msg_html)
 
-def send_confirmation_email(links):
-    body="""
-Hi,
+def send_confirmation_email(site_name, delivery_date, installation_date):
+    msg_html = render_to_string('emails/customer_and_contractor_confirmation_notifier.html', {
+        'recipient': 'James',
+        'site_name': site_name,
+        'delivery_date': delivery_date,
+        'installation_date': installation_date})
 
-Installation and delivery dates have been confirmed with customer and contractor for %s. Please see details below:
-
-Name of site: %s
-Delivery Date: %s
-Installation Date: %s
-
-Thanks,
-
-Woo Woo Web App
-""" % links
     send_mail('Installation and Delivery Confirmation',
-                body,
+        'plain text here',
+        settings.APPLICATION_EMAIL,
+        [settings.MANAGER_EMAIL, settings.CONTRACTOR_EMAIL],
+        fail_silently=False,
+        html_message=msg_html)
+
+def send_retailer_pickup_date(site_name, pickup_date, yes_link, no_link):
+    msg_html = render_to_string('emails/retailer_pickup_date_notifier.html', {
+        'recipient': 'Kazuba',
+        'site_name': site_name,
+        'pickup_date': pickup_date,
+        'yes':yes_link,
+        'no':no_link})
+
+    send_mail('Installation and Delivery Confirmation',
+                'plain_text',
                 settings.APPLICATION_EMAIL,
                 [settings.MANAGER_EMAIL, settings.CONTRACTOR_EMAIL],
-                fail_silently=False)
-
-def send_kazuba_pickup_date(links):
-    body="""
-Hello Kazuba,
-
-Installation and delivery dates have been confirmed with customer and contractor and a purchase order has been sent to you. Please see details below and confirm the the pickup date.
-
-Name of site: %s
-Pikup Date: %s
-
-
-Is the pickup date good for you?
-
-<a href="%s">yes</a>
-<a href="%s">no</a>
-
-Thanks,
-
-Woo Woo Web App
-""" % links
-    send_mail('Installation and Delivery Confirmation',
-                body,
-                settings.APPLICATION_EMAIL,
-                [settings.MANAGER_EMAIL, settings.CONTRACTOR_EMAIL],
-                fail_silently=False)
+                fail_silently=False,
+                html_message=msg_html)
 
 def send_final_confirmation(links):
     body="""

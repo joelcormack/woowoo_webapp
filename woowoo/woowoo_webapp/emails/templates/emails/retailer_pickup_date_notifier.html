@@ -1,0 +1,37 @@
+{% extends "emails/base.html" %}
+{% block content %}
+
+<h2>Hi {{ recipient }}</h2>
+
+<p> 
+Installation and delivery dates have been confirmed with 
+customer and contractor and a purchase order has been sent 
+to you. Please see details below and confirm the the pickup date.
+</p>
+<p>
+Name of site: <b>{{ site_name }}</b><br />
+Pikup Date: <b>{{ pickup_date }}</b>
+</p>
+
+<p>Is the pickup date good for you?</p>
+
+<p></p>
+<table>
+    <tr>
+        <td align="center">
+            <p>
+                <a href="{{ yes }}" class="button">YES</a>
+            </p>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td align="center">
+            <p>
+                <a href="{{ no }}" class="button button--red">NO</a>
+            </p>
+        </td>
+    </tr>
+</table>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "emails/base.html" %}
+{% block content %}
+
+<h2>Hi {{ recipient }}</h2>
+
+<p> 
+Installation and delivery dates have been confirmed 
+with customer and contractor for {{ site_name }}.
+</p>
+
+<p>
+Name of site: <b>{{ site_name }}</b><br />
+Delivery Date: <b>{{ delivery_date }}</b><br />
+Installation Date: <b>{{ installation_date }}</b>
+</p>
+
+{% endblock %}
