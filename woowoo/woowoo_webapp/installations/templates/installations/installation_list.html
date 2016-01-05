@@ -1,6 +1,9 @@
-<h1>List of installations:</h1>
-<ul>
-  {% for installation in object_list %}
-  <li><a href="{% url 'installation-detail' installation.id %}">{{ installation.name }}</a></li>
-  {% endfor %}
-</ul>
+{% extends 'installations/base.html' %}
+{% block content %}
+<div class="form-signin">
+  <h1 class="form-signin--heading">List of installations:</h1>
+    {% for installation in object_list %}
+    <a class="btn btn-primary btn-block" href="{% url 'installation-detail' installation.id %}">{{ installation.name }}</a>
+    {% endfor %}
+</div>
+{% endblock %}
