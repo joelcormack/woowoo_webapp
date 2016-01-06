@@ -200,9 +200,10 @@ class ContractorConfirmation(View):
             send_installation_and_delivery_form(
                     answer=answer,
                     date=installation.provisional_date,
-                    name=installation.contacts.name,
-                    number=installation.contacts.phone,
-                    email=installation.contacts.email,
+                    site_name=installation.name,
+                    name=installation.contact_set.first().name,
+                    number=installation.contact_set.first().phone,
+                    email=installation.contact_set.first().email,
                     form=dates_form_link)
         else:
             #redirect contractor to form to pick date that suits them
@@ -211,15 +212,16 @@ class ContractorConfirmation(View):
             send_installation_and_delivery_form(
                     answer=answer,
                     date=installation.provisional_date,
-                    name=installation.contacts.name,
-                    number=installation.contacts.phone,
-                    email=installation.contacts.email,
+                    name=installation.contact_set.first().name,
+                    number=installation.contact_set.first().phone,
+                    email=installation.contact_set.first().email,
                     form=dates_form_link)
 
         return HttpResponse(installation.contractor_confirmed)
 
 def set_dates(request, *args, **kwargs):
     installation_id = kwargs.get('installation_id')
+    installation=Installation.objects.get(id=installation_id)
     if request.method == 'POST':
         form = ContractorForm(request.POST)
         if form.is_valid():
@@ -256,7 +258,8 @@ def set_dates(request, *args, **kwargs):
             request,
             'installations/installation_dates.html',
             {'form': form,
-            'installation_id': installation_id})
+            'installation_id': installation_id,
+            'site_name': installation.name})
 
 class RetailerConfirmation(View):
     def get(self, request, *args, **kwargs):

@@ -28,12 +28,13 @@ def send_provisional_date(date, yes, no):
         fail_silently=False,
 	html_message=msg_html)
 
-def send_installation_and_delivery_form(answer, date,  name, number, email, form):
+def send_installation_and_delivery_form(answer, date, site_name, name, number, email, form):
     if answer == 'yes':
         msg_html = render_to_string('emails/installation_and_delivery_form_notifier.html', {
             'recipient': 'Jake',
             'date': date,
             'customer_name': name,
+            'site_name': site_name,
             'number':number,
             'email': email,
             'form': form})

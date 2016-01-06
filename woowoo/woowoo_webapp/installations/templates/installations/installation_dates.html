@@ -19,7 +19,7 @@
 
 {% block content %}
 <form class="form-signin" action="{% url 'contractor-dates' installation_id %}" method="post">
-  <h2 class="form-signin--heading">Mulberry Road Allotments</h2>
+  <h2 class="form-signin--heading">{{ site_name }}</h2>
   {% csrf_token %}
   {{ form|bootstrap }}
   <div class="form-group">
