@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View, ListView, DetailView
 from django.core.mail import send_mail
 
-from .models import Installation, Contact
+from .models import Installation, Contact, Product
 from .forms import ContractorForm
 from .kashflow import KashFlow
 from emails.views import send_provisional_date, \
@@ -25,6 +25,7 @@ class InstallationDetail(DetailView):
     model = Installation
 
 class CreateInstallation(View):
+    """ZOHO CRM maped --> app variables"""
     potential_to_installation = {
                 'POTENTIALID':'potential_id',
                 'Potential Name':'potential_name',
@@ -32,6 +33,11 @@ class CreateInstallation(View):
                 'Site Street 2':'site_address_two',
                 'Site Post Code':'site_postcode',
                 'CONTACTID':'contact_id'}
+    product = { 'KL1':'KL1',
+                'KL2':'KL2 prm',
+                'KL3':'KL3',
+                'STK':'STK',
+                'KLu':'KLu'}
     contact_zoho_to_contact = {
                 'CONTACTID' : 'contact_id',
                 'First Name': 'first_name',
@@ -49,11 +55,15 @@ class CreateInstallation(View):
         contact = self.get_record_data("Contacts", potential_data.get('contact_id'))
         contact_data = self.extract_contact_data(contact)
 
+        """extract product data"""
+        products = self.extract_product_data(potential)
+
         """create instances with data"""
         matches = Installation.objects.filter(pk=potential_data['potential_id'])
         if matches.count() < 1:
-            self.add_contact(contact_data)
-            self.add_installation(potential_data)
+            installation_pk = self.add_installation(potential_data)
+            self.add_contact(contact_data, installation_pk)
+            self.add_product(products, installation_pk)
         else:
             print "Installation with that potential ID has already been added"
             match = matches.first()
@@ -120,6 +130,18 @@ class CreateInstallation(View):
 
         return p_data
 
+    def extract_product_data(self, product):
+        """extract the product data"""
+        products = {}
+        for set in product:
+            value = set['val']
+            content = set['content']
+            for pot, ins in CreateInstallation.product.iteritems():
+                if value == pot:
+                    products[ins] = content
+
+        return products
+
     def extract_contact_data(self, contact_json):
         """
         extract the potential data we need for our models
@@ -134,25 +156,35 @@ class CreateInstallation(View):
 
         return c_data
 
-    def add_contact(self, data):
+    def add_installation(self, pot_data):
+        installation = Installation(
+                id=pot_data.get('potential_id', ''),
+                name=pot_data.get('potential_name', ''),
+                address_one=pot_data.get('site_address', ''),
+                address_two=pot_data.get('site_address_two', ''),
+                postcode=pot_data.get('site_postcode', ''))
+        installation.save()
+        print "Added installation at site : ", installation
+        return installation.id
+
+    def add_contact(self, data, inst_pk):
         contact = Contact(
-                id = data.get('contact_id',''),
-                name = data.get('first_name', '')+" "+data.get('last_name', ''),
-                phone = data.get('phone',''),
-                email = data.get('email',''))
+                id=data.get('contact_id',''),
+                name=data.get('first_name', '')+" "+data.get('last_name', ''),
+                phone=data.get('phone',''),
+                email=data.get('email',''),
+                installation=Installation.objects.get(id=inst_pk))
         contact.save()
         print "Added contact : ", contact
 
-    def add_installation(self, pot_data):
-        installation = Installation(
-                id = pot_data.get('potential_id', ''),
-                name = pot_data.get('potential_name', ''),
-                address_one = pot_data.get('site_address', ''),
-                address_two = pot_data.get('site_address_two', ''),
-                postcode = pot_data.get('site_postcode', ''),
-                contacts = Contact.objects.get(pk=pot_data['contact_id']))
-        installation.save()
-        print "Added installation at site : ", installation
+    def add_product(self, data, inst_pk):
+        for item in data.items():
+            product = Product(
+                name=item[0],
+                quantity=item[1],
+                installation=Installation.objects.get(id=inst_pk))
+            product.save()
+            print "Added product : ", product
 
 class ContractorConfirmation(View):
     def get(self, request, *args, **kwargs):

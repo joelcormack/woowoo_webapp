@@ -3,19 +3,6 @@ from __future__ import unicode_literals
 from django.db import models
 import re
 
-class Contact(models.Model):
-    """
-    Models a contact of the site with a name, email and phone numbers
-    """
-    id = models.CharField(max_length=50, primary_key=True)
-    name = models.CharField(max_length=30)
-    email = models.EmailField(max_length=30)
-    phone = models.CharField(max_length=20)
-
-    def __unicode__(self):
-        return self.name
-
-
 class Installation(models.Model):
     """
     Models an installation with a date set on creation, installation date,
@@ -40,11 +27,39 @@ class Installation(models.Model):
     customer_confirmed = models.BooleanField(default=False)
     retailer_confirmed = models.BooleanField(default=False)
 
-    #foreign keys
-    contacts = models.ForeignKey('Contact', on_delete=models.CASCADE)
-
     def __unicode__(self):
         return self.name
+
+class Contact(models.Model):
+    """
+    Models a contact of the site with a name, email and phone numbers
+    """
+    id = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=30)
+    email = models.EmailField(max_length=30)
+    phone = models.CharField(max_length=20)
+    #foreign key
+    installation = models.ForeignKey(Installation, on_delete=models.CASCADE)
+    def __unicode__(self):
+        return self.name
+
+class Product(models.Model):
+    """
+    Models a woo woo product, cabin or a loo with a given quantity
+    """
+    PRODUCT_TYPES = (
+            ('K1', 'KL1'),
+            ('K2', 'KL2 prm'),
+            ('K3', 'KL3'),
+            ('Ku', 'KL Urinal'),
+            ('ST', 'STK'))
+    name = models.CharField(choices=PRODUCT_TYPES, max_length=2, null=True)
+    quantity = models.IntegerField(default=0, null=True)
+    #foreign key
+    installation = models.ForeignKey(Installation, on_delete=models.CASCADE)
+    def __unicode__(self):
+        return self.name
+
 
 from django_mailbox.signals import message_received
 from django.dispatch import receiver
