@@ -109,6 +109,11 @@ class ContractorConfirmation(View):
                     number=installation.contact_set.first().phone,
                     email=installation.contact_set.first().email,
                     form=dates_form_link)
+            return HttpResponse("Thank you for confirming the provisional week, you will be \
+                    sent an email with the customers details so that you can get in touch \
+                    with them to arrange suitable installation and delivery dates. \
+                    Please fill in the form linked in the email.")
+
         else:
             #redirect contractor to form to pick date that suits them
             print "contractor not confirmed"
@@ -116,12 +121,15 @@ class ContractorConfirmation(View):
             send_installation_and_delivery_form(
                     answer=answer,
                     date=installation.provisional_date,
+                    site_name=installation.name,
                     name=installation.contact_set.first().name,
                     number=installation.contact_set.first().phone,
                     email=installation.contact_set.first().email,
                     form=dates_form_link)
-
-        return HttpResponse(installation.contractor_confirmed)
+            return HttpResponse("Thank you for your honesty, you have been sent another email \
+                    with the customers details so that you can get in touch with them to \
+                    arrange suitable installation and delivery dates. Please fill in the form \
+                    linked in the email.")
 
 def set_dates(request, *args, **kwargs):
     installation_id = kwargs.get('installation_id')
