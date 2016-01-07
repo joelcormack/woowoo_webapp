@@ -53,11 +53,9 @@ class CreateInstallation(View):
         installation = Installation.objects.get(pk=pk)
         installation.provisional_date = installation.get_provisional_date()
         installation.save()
-        print "next monday from date: ", provisional_date
-        """
-        email links for contractor
-        """
-        base_url = 'http://localhost:8080/installations/'
+
+        """email links for contractor"""
+        base_url = settings.SITE_URL + 'installations/'
         department = "/contractor/"
         yes_link = base_url + pk + department + "?confirm=yes"
         no_link = base_url + pk + department + "?confirm=no"
