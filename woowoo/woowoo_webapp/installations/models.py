@@ -12,6 +12,17 @@ class Installation(models.Model):
     delivery date and pickup date, booleans to monitor stages of confirmations for
     contractor, haulier, customer and retailer and associated sites and contacts.
     """
+    def set_pickup(self):
+        #calc pickup date
+        delivery = self.delivery_date.weekday()
+        diff = 2 - delivery #2 is wednesday
+        if delivery > 0 and delivery < 5:
+            self.pickup_date = self.delivery_date - timedelta(days=7 - diff)
+        else:
+            self.pickup_date = self.delivery_date - timedelta(days=14 - diff)
+        self.save()
+        print self.pickup_date
+
     def set_provisional(self):
         """calculate provisional date"""
         def next_weekday(day, weekday):

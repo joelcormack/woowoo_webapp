@@ -143,16 +143,22 @@ def set_dates(request, *args, **kwargs):
             installation.delivery_date = delivery_date
             installation.installation_date = installation_date
             installation.save()
+            installation.set_pickup()
             send_confirmation_email(
                 site_name=installation.name,
                 delivery_date=delivery_date,
                 installation_date=installation_date)
             #send purchase order
             kf = KashFlow()
-            rnumb = kf.create_purchase_order(installation.name)
-            kf.add_item(rnumb, 1.00, 'KL1 + STK', 2700.00)
-            kf.add_delivery_address(rnumb,'\nFlat 1, \n25 Crescent Way, \nBrockey, \nSE4 1QL')
-            po_confirmation = kf.send_purchase_order(rnumb)
+            purchase_order = kf.create_purchase_order(installation.name)
+            for product in installation.product_set.all():
+                kf.add_item(purchase_order, product.quantity,settings.SALES_CODE, product.name, product.rate)
+            kf.add_delivery_address(purchase_order,
+                    '\n%s, \n%s, \n%s, \n%s' % (installation.name,
+                                                installation.address_one,
+                                                installation.address_two,
+                                                installation.postcode))
+            po_confirmation = kf.send_purchase_order(purchase_order)
             base_url = 'http://localhost:8080/installations/'
             department = "/retailer/"
             pk = installation.id
@@ -160,7 +166,7 @@ def set_dates(request, *args, **kwargs):
             no_link = base_url + pk + department + "?confirm=no"
             send_retailer_pickup_date(
                     site_name=installation.name,
-                    pickup_date='20/20/19',
+                    pickup_date=installation.pickup_date.strftime('%d/%m/%Y'),
                     yes_link=yes_link,
                     no_link=no_link)
             return HttpResponseRedirect(reverse('installation-detail', kwargs={'pk': installation_id}))
@@ -181,10 +187,10 @@ class RetailerConfirmation(View):
         if answer == 'yes':
             installation.retailer_confirmed = True
             kf = KashFlow(supplier='Kuehne + Nagel', supplier_id=2876893)
-            rnumb = kf.create_purchase_order('some ref')
-            kf.add_item(rnumb, 1.00, 'KL1 + STK', 2700.00)
-            kf.add_delivery_address(rnumb,'\nFlat 1, \n25 Crescent Way, \nBrockey, \nSE4 1QL')
-            po_confirmation = kf.send_purchase_order(rnumb)
+            purchase_order = kf.create_purchase_order('some ref')
+            kf.add_item(purchase_order, 1.00, settings.CARRRIAGE, 'KL1 + STK', 2700.00)
+            kf.add_delivery_address(purchase_order,'\nFlat 1, \n25 Crescent Way, \nBrockey, \nSE4 1QL')
+            po_confirmation = kf.send_purchase_order(purchase_order)
         else:
             #redirect contractor to form to pick date that suits them
             print "contractor not confirmed"

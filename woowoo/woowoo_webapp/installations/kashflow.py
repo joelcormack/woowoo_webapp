@@ -1,5 +1,5 @@
 from django.conf import settings
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from suds.client import Client, WebFault
 
@@ -24,13 +24,13 @@ class KashFlow:
     def create_purchase_order(self, ref):
 
         now = datetime.utcnow().replace(microsecond=0)
-        due = now + timedelta(days=30).isoformat()
+        due = now + timedelta(days=30)
 
         invoice = self.client.factory.create('Invoice')
         invoice.InvoiceDBID = 0
         invoice.InvoiceNumber = 0
         invoice.InvoiceDate = now.isoformat()
-        invoice.DueDate = due
+        invoice.DueDate = due.isoformat()
         invoice.Customer = self.supplier
         invoice.CustomerID = self.supplier_id
         invoice.Paid = 0
@@ -58,12 +58,12 @@ class KashFlow:
             print e
         return receipt_number
 
-    def add_item(self, receipt_number, quantity, description, price):
+    def add_item(self, receipt_number, quantity, charge_type ,description, price):
         invoice_line = self.client.factory.create('InvoiceLine')
         invoice_line.Quantity = quantity
         invoice_line.Description = description
         invoice_line.Rate = price
-        invoice_line.ChargeType = 842380 #sales code
+        invoice_line.ChargeType = charge_type
         invoice_line.VatRate = 0
         invoice_line.VatAmount = 0
         invoice_line.ProductID = 0
