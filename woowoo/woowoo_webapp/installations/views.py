@@ -8,15 +8,12 @@ from django.core.mail import send_mail
 from .models import Installation, Contact, Product
 from .forms import ContractorForm
 from .kashflow import KashFlow
+from .zoho import Zoho
 from emails.views import send_provisional_date, \
 send_installation_and_delivery_form, send_confirmation_email, \
 send_retailer_pickup_date, send_installation_exists_notifier
 
 from datetime import date, timedelta
-import urllib
-import urllib2
-import json
-import pprint
 
 class InstallationList(ListView):
     model = Installation
@@ -25,38 +22,19 @@ class InstallationDetail(DetailView):
     model = Installation
 
 class CreateInstallation(View):
-    """ZOHO CRM maped --> app variables"""
-    potential_to_installation = {
-                'POTENTIALID':'potential_id',
-                'Potential Name':'potential_name',
-                'Site Street':'site_address',
-                'Site Street 2':'site_address_two',
-                'Site Post Code':'site_postcode',
-                'CONTACTID':'contact_id'}
-    product = { 'KL1':'KL1',
-                'KL2':'KL2 prm',
-                'KL3':'KL3',
-                'STK':'STK',
-                'KLu':'KLu'}
-    contact_zoho_to_contact = {
-                'CONTACTID' : 'contact_id',
-                'First Name': 'first_name',
-                'Last Name': 'last_name',
-                'Phone' : 'phone',
-                'Email': 'email'}
-
     def get(self, request):
+        zoho = Zoho()
         """retrieve and extract potential data"""
         potential_id = request.GET.get('pid')
-        potential = self.get_record_data("Potentials", potential_id)
-        potential_data = self.extract_potential_data(potential)
+        potential = zoho.get_record_data("Potentials", potential_id)
+        potential_data = zoho.extract_potential_data(potential)
 
         """retrieve and extract contact data"""
-        contact = self.get_record_data("Contacts", potential_data.get('contact_id'))
-        contact_data = self.extract_contact_data(contact)
+        contact = zoho.get_record_data("Contacts", potential_data.get('contact_id'))
+        contact_data = zoho.extract_contact_data(contact)
 
         """extract product data"""
-        products = self.extract_product_data(potential)
+        products = zoho.extract_product_data(potential)
 
         """create instances with data"""
         matches = Installation.objects.filter(pk=potential_data['potential_id'])
