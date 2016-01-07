@@ -71,20 +71,9 @@ class CreateInstallation(View):
             return HttpResponse('Installation already exisits with that ID', status=202)
 
         """create provisional date"""
-        def next_weekday(day, weekday):
-            days_ahead = weekday - day.weekday()
-            if days_ahead <= 0: # Target day already happened this week
-                days_ahead += 7
-            return day + timedelta(days_ahead)
         pk = potential_data['potential_id']
         installation = Installation.objects.get(pk=pk)
-        provisional_date = installation.created_date
-        print "date created: ", provisional_date
-        prov_date_buffer = timedelta(days=42)
-        provisional_date += prov_date_buffer
-        print "6 weeks ahead : ", provisional_date
-        provisional_date = next_weekday(provisional_date, 0)
-        installation.provisional_date = provisional_date
+        installation.provisional_date = installation.get_provisional_date()
         installation.save()
         print "next monday from date: ", provisional_date
         """
@@ -94,67 +83,9 @@ class CreateInstallation(View):
         department = "/contractor/"
         yes_link = base_url + pk + department + "?confirm=yes"
         no_link = base_url + pk + department + "?confirm=no"
-        send_provisional_date(date=provisional_date, yes=yes_link, no=no_link)
-        return HttpResponse("ok")
+        send_provisional_date(date=installation.provisional_date, yes=yes_link, no=no_link)
+        return HttpResponse("Installation successfully added")
 
-    def get_record_data(self, module_name, record_id):
-        """
-        retieves potential data in json format
-        from zoho api and returns a python dictionary
-        """
-        authtoken = settings.ZOHO_AUTHTOKEN
-        params = {'authtoken':authtoken,'scope':'crmapi','id':record_id}
-        final_URL = "https://crm.zoho.com/crm/private/json/"+module_name+"/getRecordById"
-        data = urllib.urlencode(params)
-        request = urllib2.Request(final_URL,data)
-        response = urllib2.urlopen(request)
-        json_response = response.read()
-        data = json.loads(json_response)
-        try:
-            data = data['response']['result'][module_name]['row']['FL']
-            return data
-        except ValueError, Argument:
-            print "Incorrect json response structure from zoho API", Argument
-
-    def extract_potential_data(self, potential_json):
-        """
-        extract the potential data we need for our models
-        """
-        p_data = {}
-        for set in potential_json:
-            value = set['val']
-            content = set['content']
-            for pot, ins in CreateInstallation.potential_to_installation.iteritems():
-                if value == pot:
-                    p_data[ins] = content
-
-        return p_data
-
-    def extract_product_data(self, product):
-        """extract the product data"""
-        products = {}
-        for set in product:
-            value = set['val']
-            content = set['content']
-            for pot, ins in CreateInstallation.product.iteritems():
-                if value == pot:
-                    products[ins] = content
-
-        return products
-
-    def extract_contact_data(self, contact_json):
-        """
-        extract the potential data we need for our models
-        """
-        c_data = {}
-        for set in contact_json:
-            value = set['val']
-            content = set['content']
-            for contact_zoho, contact in CreateInstallation.contact_zoho_to_contact.iteritems():
-                if value == contact_zoho:
-                    c_data[contact] = content
-
-        return c_data
 
     def add_installation(self, pot_data):
         installation = Installation(

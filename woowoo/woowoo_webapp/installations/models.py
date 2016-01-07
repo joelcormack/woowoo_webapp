@@ -1,13 +1,14 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from datetime import date, timedelta
 import re
 
 class Installation(models.Model):
     """
     Models an installation with a date set on creation, installation date,
     delivery date and pickup date, booleans to monitor stages of confirmations for
-    contractot, haulier, customer and retailer and associated sites and contacts.
+    contractor, haulier, customer and retailer and associated sites and contacts.
     """
     id = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=30)
@@ -29,6 +30,15 @@ class Installation(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def get_provisional_date(self):
+        """calculate provisional date"""
+        def next_weekday(day, weekday):
+            days_ahead = weekday - day.weekday()
+            if days_ahead <= 0: # Target day already happened this week
+                days_ahead += 7
+            return day + timedelta(days_ahead)
+        return next_weekday(self.created_date + timedelta(days=42), 0)
 
 class Contact(models.Model):
     """
@@ -57,6 +67,7 @@ class Product(models.Model):
     quantity = models.IntegerField(default=0, null=True)
     #foreign key
     installation = models.ForeignKey(Installation, on_delete=models.CASCADE)
+
     def __unicode__(self):
         return self.name
 
