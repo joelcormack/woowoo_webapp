@@ -1,4 +1,5 @@
 from django.conf import settings
+from datetime import datetime
 
 from suds.client import Client, WebFault
 
@@ -21,11 +22,15 @@ class KashFlow:
         self.client = Client(url)
 
     def create_purchase_order(self, ref):
+
+        now = datetime.utcnow().replace(microsecond=0)
+        due = now + timedelta(days=30).isoformat()
+
         invoice = self.client.factory.create('Invoice')
         invoice.InvoiceDBID = 0
         invoice.InvoiceNumber = 0
-        invoice.InvoiceDate = '2020-02-11T09:00:00'
-        invoice.DueDate = '2020-02-11T09:00:00'
+        invoice.InvoiceDate = now.isoformat()
+        invoice.DueDate = due
         invoice.Customer = self.supplier
         invoice.CustomerID = self.supplier_id
         invoice.Paid = 0

@@ -34,7 +34,7 @@ class Zoho:
                 'Site Post Code':'site_postcode',
                 'CONTACTID':'contact_id'}
     product = { 'KL1':'KL1',
-                'KL2':'KL2 prm',
+                'KL2':'KL2',
                 'KL3':'KL3',
                 'STK':'STK',
                 'KLu':'KLu'}

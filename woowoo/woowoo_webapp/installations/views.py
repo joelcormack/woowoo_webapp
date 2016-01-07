@@ -48,11 +48,8 @@ class CreateInstallation(View):
             send_installation_exists_notifier(recipient=settings.MANAGER, installation=match, pid=potential_id)
             return HttpResponse('Installation already exisits with that ID', status=202)
 
-        """create provisional date"""
         pk = potential_data['potential_id']
         installation = Installation.objects.get(pk=pk)
-        installation.provisional_date = installation.get_provisional_date()
-        installation.save()
 
         """email links for contractor"""
         base_url = settings.SITE_URL + 'installations/'

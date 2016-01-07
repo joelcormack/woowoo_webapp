@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.db import models
+from decimal import *
 from datetime import date, timedelta
 import re
 
@@ -10,6 +12,16 @@ class Installation(models.Model):
     delivery date and pickup date, booleans to monitor stages of confirmations for
     contractor, haulier, customer and retailer and associated sites and contacts.
     """
+    def set_provisional(self):
+        """calculate provisional date"""
+        def next_weekday(day, weekday):
+            days_ahead = weekday - day.weekday()
+            if days_ahead <= 0: # Target day already happened this week
+                days_ahead += 7
+            return day + timedelta(days_ahead)
+        self.provisional_date = next_weekday(self.created_date + timedelta(days=42), 0)
+
+
     id = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=30)
     address_one = models.CharField(max_length=50)
@@ -31,14 +43,11 @@ class Installation(models.Model):
     def __unicode__(self):
         return self.name
 
-    def get_provisional_date(self):
-        """calculate provisional date"""
-        def next_weekday(day, weekday):
-            days_ahead = weekday - day.weekday()
-            if days_ahead <= 0: # Target day already happened this week
-                days_ahead += 7
-            return day + timedelta(days_ahead)
-        return next_weekday(self.created_date + timedelta(days=42), 0)
+    def save(self, *args, **kwargs):
+        super(Installation, self).save(*args, **kwargs) #call original save method
+        self.set_provisional()
+        super(Installation, self).save(*args, **kwargs) #call original save method
+
 
 class Contact(models.Model):
     """
@@ -50,6 +59,7 @@ class Contact(models.Model):
     phone = models.CharField(max_length=20)
     #foreign key
     installation = models.ForeignKey(Installation, on_delete=models.CASCADE)
+
     def __unicode__(self):
         return self.name
 
@@ -57,19 +67,39 @@ class Product(models.Model):
     """
     Models a woo woo product, cabin or a loo with a given quantity
     """
+    def set_rate(self):
+        prices = {
+                'KL1': Decimal(settings.PRICE_KL1),
+                'KL2': Decimal(settings.PRICE_KL2),
+                'KL3': Decimal(settings.PRICE_KL3),
+                'KLu': Decimal(settings.PRICE_KLU),
+                'STK': Decimal(settings.PRICE_STK),
+                }
+        self.rate = prices.get(self.name, Decimal(0))
+
+
     PRODUCT_TYPES = (
             ('K1', 'KL1'),
-            ('K2', 'KL2 prm'),
+            ('K2', 'KL2'),
             ('K3', 'KL3'),
-            ('Ku', 'KL Urinal'),
+            ('Ku', 'KLu'),
             ('ST', 'STK'))
+
     name = models.CharField(choices=PRODUCT_TYPES, max_length=2, null=True)
     quantity = models.IntegerField(default=0, null=True)
+    rate = models.DecimalField(null=True, decimal_places=2, max_digits=7)
     #foreign key
     installation = models.ForeignKey(Installation, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        super(Product, self).save(*args, **kwargs) #call original save method
+        self.set_rate()
+        super(Product, self).save(*args, **kwargs) #call original save method
+
+
 
 
 from django_mailbox.signals import message_received
@@ -92,7 +122,6 @@ def match_dates(message,dates):
             ).filter(
                 haulier_confirmed=False)
     for installation in installations:
-        import ipdb; ipdb.set_trace()
         if installation.installation_date.strftime("%d/%m/%Y") == dates[0]:
             print "matched installation date"
             if installation.delivery_date.strftime("%d/%m/%Y") == dates[1]:
