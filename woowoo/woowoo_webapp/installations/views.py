@@ -95,7 +95,7 @@ class ContractorConfirmation(View):
         installation_id = self.kwargs.get('installation_id')
         installation = Installation.objects.get(id=installation_id)
         answer = request.GET.get('confirm')
-        base_url = 'http://localhost:8080/installations/'
+        base_url = settings.SITE_URL + 'installations/'
         department = "/contractor/"
         dates_form_link = base_url + installation_id + department + 'form/'
 
@@ -159,7 +159,7 @@ def set_dates(request, *args, **kwargs):
                                                 installation.address_two,
                                                 installation.postcode))
             po_confirmation = kf.send_purchase_order(purchase_order)
-            base_url = 'http://localhost:8080/installations/'
+            base_url = settings.SITE_URL + 'installations/'
             department = "/retailer/"
             pk = installation.id
             yes_link = base_url + pk + department + "?confirm=yes"
