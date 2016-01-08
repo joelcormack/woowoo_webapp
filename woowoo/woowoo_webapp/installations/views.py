@@ -152,7 +152,8 @@ def set_dates(request, *args, **kwargs):
             kf = KashFlow()
             purchase_order = kf.create_purchase_order(installation.name)
             for product in installation.product_set.all():
-                kf.add_item(purchase_order, product.quantity,settings.SALES_CODE, product.name, product.rate)
+                if product.quantity > 0:
+                    kf.add_item(purchase_order, product.quantity,settings.SALES_CODE, product.name, product.rate)
             kf.add_note(purchase_order,
                     '\n%s, \n%s, \n%s, \n%s' % (installation.name,
                                                 installation.address_one,
@@ -190,13 +191,13 @@ Weight: 350kg
         installation_id = self.kwargs.get('installation_id')
         installation = Installation.objects.get(id=installation_id)
         answer = request.GET.get('confirm')
-        loading_date = '2nd December'
-        unloading_date = '3rd January'
+        loading_date = installation.pickup_date
+        unloading_date = installation.delivery_date
         if answer == 'yes':
             installation.retailer_confirmed = True
             kf = KashFlow()
             purchase_order = kf.create_purchase_order()
-            kf.add_item(purchase_order, installation.product_set.count(), settings.CARRIAGE, DESCRIPTION, 480.00)
+            kf.add_item(purchase_order, installation.product_set.count(), settings.CARRIAGE, DESCRIPTION, 0)
             kf.add_note(purchase_order, 'Loading Date: %s \nUnloading Date: %s' %(loading_date, unloading_date))
             kf.add_note(purchase_order, 'Loading: \n\
 SARL Kazuba \n\

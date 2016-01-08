@@ -82,7 +82,7 @@ class Product(models.Model):
     def set_rate(self):
         prices = {
                 'KL1': Decimal(settings.PRICE_KL1),
-                'KL2': Decimal(settings.PRICE_KL2),
+                'KL2 prm': Decimal(settings.PRICE_KL2),
                 'KL3': Decimal(settings.PRICE_KL3),
                 'KLu': Decimal(settings.PRICE_KLU),
                 'STK': Decimal(settings.PRICE_STK),
@@ -92,7 +92,7 @@ class Product(models.Model):
 
     PRODUCT_TYPES = (
             ('K1', 'KL1'),
-            ('K2', 'KL2'),
+            ('K2', 'KL2 prm'),
             ('K3', 'KL3'),
             ('Ku', 'KLu'),
             ('ST', 'STK'))
