@@ -28,6 +28,10 @@ DEBUG = False
 
 ALLOWED_HOSTS = [u'joelcormack.pythonanywhere.com']
 
+#KASHFLOW TEST
+KF_TEST_RECIPIENT_ID = "4580634"
+KF_TEST_RECIPIENT_NAME = "Test"
+
 
 # Application definition
 
