@@ -175,7 +175,7 @@ def set_dates(request, *args, **kwargs):
     return render(
             request,
             'installations/installation_dates.html',
-            {'form': form,
+            context={'form': form,
             'installation_id': installation_id,
             'site_name': installation.name})
 
