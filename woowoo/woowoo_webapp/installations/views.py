@@ -180,16 +180,38 @@ def set_dates(request, *args, **kwargs):
             'site_name': installation.name})
 
 class RetailerConfirmation(View):
+
+
     def get(self, request, *args, **kwargs):
+        DESCRIPTION ="""Pallet Shipment
+Dimensions: 235 cm long x 105cm wide
+Weight: 350kg
+        """
         installation_id = self.kwargs.get('installation_id')
         installation = Installation.objects.get(id=installation_id)
         answer = request.GET.get('confirm')
+        loading_date = '2nd December'
+        unloading_date = '3rd January'
         if answer == 'yes':
             installation.retailer_confirmed = True
-            kf = KashFlow(supplier='Kuehne + Nagel', supplier_id=2876893)
-            purchase_order = kf.create_purchase_order('some ref')
-            kf.add_item(purchase_order, 1.00, settings.CARRRIAGE, 'KL1 + STK', 2700.00)
-            kf.add_delivery_address(purchase_order,'\nFlat 1, \n25 Crescent Way, \nBrockey, \nSE4 1QL')
+            kf = KashFlow()
+            purchase_order = kf.create_purchase_order()
+            kf.add_item(purchase_order, installation.product_set.count(), settings.CARRIAGE, DESCRIPTION, 480.00)
+            kf.add_note(purchase_order, 'Loading Date: %s \nUnloading Date: %s' %(loading_date, unloading_date))
+            kf.add_note(purchase_order, 'Loading: \n\
+SARL Kazuba \n\
+18, Chemin du trou de Fourque \n\
+13200 Arles \n\
+Contact: Nicolas Flamen +33(0)6 28 33 10 89')
+            kf.add_note(purchase_order, 'Unloading: \n%s\n%s\n%s\n%s' % (installation.name,
+                installation.address_one,
+                installation.address_two,
+                installation.postcode))
+            kf.add_note(purchase_order, 'Contact: %s - %s' % (installation.contact_set.first(), installation.contact_set.first().phone))
+            if installation.has_forklift:
+                kf.add_note(purchase_order, 'Delivery Instructions: Customer has forklift.')
+            else:
+                kf.add_note(purchase_order, "Delivery Instructions: Customer doesn't have a  forklift.")
             po_confirmation = kf.send_purchase_order(purchase_order)
         else:
             #redirect contractor to form to pick date that suits them

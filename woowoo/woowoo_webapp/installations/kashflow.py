@@ -11,17 +11,17 @@ class KashFlow:
     def __init__(self, url=settings.KF_API_URL,
             username=settings.KF_USERNAME,
             password=settings.KF_PASSWORD,
-            supplier=settings.KF_TEST_SUPPLIER_NAME,
-            supplier_id=settings.KF_TEST_SUPPLIER_ID):
+            recipient=settings.KF_TEST_RECIPIENT_NAME,
+            recipient_id=settings.KF_TEST_RECIPIENT_ID):
         self.url = url
         self.username = username
         self.password = password
-        self.supplier =  supplier
-        self.supplier_id = supplier_id
+        self.recipient =  recipient
+        self.recipient_id = recipient_id
 
         self.client = Client(url)
 
-    def create_purchase_order(self, ref):
+    def create_purchase_order(self, ref=" "):
 
         now = datetime.utcnow().replace(microsecond=0)
         due = now + timedelta(days=30)
@@ -31,8 +31,8 @@ class KashFlow:
         invoice.InvoiceNumber = 0
         invoice.InvoiceDate = now.isoformat()
         invoice.DueDate = due.isoformat()
-        invoice.Customer = self.supplier
-        invoice.CustomerID = self.supplier_id
+        invoice.Customer = self.recipient
+        invoice.CustomerID = self.recipient_id
         invoice.Paid = 0
         invoice.CustomerReference = ref
         invoice.EstimateCategory = ''
@@ -76,10 +76,10 @@ class KashFlow:
         except WebFault, e:
             print e
 
-    def add_delivery_address(self, receipt_number, address_string):
+    def add_note(self, receipt_number, note):
         address = self.client.factory.create('InvoiceLine')
         address.Quantity = 0
-        address.Description = 'Delivery Address: %s' % address_string
+        address.Description = note
         address.Rate = 0
         address.ChargeType = 0
         address.VatRate = 0

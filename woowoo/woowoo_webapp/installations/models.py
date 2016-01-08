@@ -50,6 +50,7 @@ class Installation(models.Model):
     haulier_receipt = models.FileField(upload_to='haulier_receipts/%Y/%m/%d', null=True)
     customer_confirmed = models.BooleanField(default=False)
     retailer_confirmed = models.BooleanField(default=False)
+    has_forklift = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
