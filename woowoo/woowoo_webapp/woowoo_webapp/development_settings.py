@@ -2,6 +2,16 @@
 
 from .settings import *
 
+# Database
+# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
+
 SECRET_KEY = '1fe7tyzfom8a$a52oa5_((k$@qd_)y!5oe_%6+*uu8pmmjimo2'
 
 SITE_URL = 'http://localhost:8080/'
