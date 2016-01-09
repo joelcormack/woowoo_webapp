@@ -17,9 +17,12 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+from .views import HomeView
 from installations import urls as installations_urls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^installations/', include(installations_urls)),
+    url(r'^$', HomeView.as_view()),
+    url('', include('django.contrib.auth.urls')),
 ]                             

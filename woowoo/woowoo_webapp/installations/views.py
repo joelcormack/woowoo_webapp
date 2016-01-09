@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View, ListView, DetailView
 from django.core.mail import send_mail
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Installation, Contact, Product
 from .forms import ContractorForm
@@ -15,10 +16,10 @@ send_retailer_pickup_date, send_installation_exists_notifier
 
 from datetime import date, timedelta
 
-class InstallationList(ListView):
+class InstallationList(LoginRequiredMixin, ListView):
     model = Installation
 
-class InstallationDetail(DetailView):
+class InstallationDetail(LoginRequiredMixin, DetailView):
     model = Installation
 
 class CreateInstallation(View):
@@ -90,7 +91,7 @@ class CreateInstallation(View):
             product.save()
             print "Added product : ", product
 
-class ContractorConfirmation(View):
+class ContractorConfirmation(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         installation_id = self.kwargs.get('installation_id')
         installation = Installation.objects.get(id=installation_id)
@@ -112,7 +113,7 @@ class ContractorConfirmation(View):
             return HttpResponse("Thank you for confirming the provisional week, you will be \
                     sent an email with the customers details so that you can get in touch \
                     with them to arrange suitable installation and delivery dates. \
-                    Please fill in the form linked in the email.")
+                    Please fill in the form linked in the email. Here's a link%s" % dates_form_link)
 
         else:
             #redirect contractor to form to pick date that suits them

@@ -24,6 +24,14 @@
   </head>
   <body>
     <div class="container">
+     <div>
+      {{ user }}
+      {% if user.is_anonymous %}
+      <a href="{% url 'django.contrib.auth.views.login' %}">login</a>
+      {% else %}
+      <a href="{% url 'django.contrib.auth.views.logout' %}">logout</a>
+      {% endif %}
+    </div>
       <h1>{% block title %}{% endblock %}</h1>
       {% block content %}
       {% endblock %}
