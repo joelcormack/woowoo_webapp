@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View, ListView, DetailView
 from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.contrib.auth.decorators import login_required
 from .models import Installation, Contact, Product
 from .forms import ContractorForm
 from .kashflow import KashFlow
@@ -84,12 +84,13 @@ class CreateInstallation(View):
 
     def add_product(self, data, inst_pk):
         for item in data.items():
-            product = Product(
-                name=item[0],
-                quantity=item[1],
-                installation=Installation.objects.get(id=inst_pk))
-            product.save()
-            print "Added product : ", product
+            if int(item[1]) > 0:
+                product = Product(
+                    name=item[0],
+                    quantity=item[1],
+                    installation=Installation.objects.get(id=inst_pk))
+                product.save()
+                print "Added product : ", product
 
 class ContractorConfirmation(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -131,7 +132,7 @@ class ContractorConfirmation(LoginRequiredMixin, View):
                     with the customers details so that you can get in touch with them to \
                     arrange suitable installation and delivery dates. Please fill in the form \
                     linked in the email.")
-
+@login_required
 def set_dates(request, *args, **kwargs):
     installation_id = kwargs.get('installation_id')
     installation=Installation.objects.get(id=installation_id)
