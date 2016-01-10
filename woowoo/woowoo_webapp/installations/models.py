@@ -123,10 +123,11 @@ def match_receipt(sender, message, **args):
     extract dates from attached reciept to match an exsiting
     installation as confirmation from haulier
     """
-    if file_is_pdf(message.attachments.first()):
-        dates = extract_dates(message)
-        print "dates returned = " , dates
-        match_dates(message,dates)
+    if message.attachments.count() > 0:
+        if file_is_pdf(message.attachments.first()):
+            dates = extract_dates(message)
+            print "dates returned = " , dates
+            match_dates(message,dates)
 
 def match_dates(message,dates):
     installations = Installation.objects.filter(
