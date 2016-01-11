@@ -1,0 +1,20 @@
+{% extends 'installations/base.html' %}
+{% block content %}
+<div class="form-signin">
+  <h1 class="form-signin--heading">Thank you</h1>
+  {% if confirmation == True %}
+    <p>for confirming the provisional date, please fill out
+       <a href="{{ form }}">this form</a> once you've
+       contacted the customer to set the installation
+       and delivery dates.
+    </p>
+  {% else %}
+    <p>for letting us know the provisional date is not suitable,
+       you've been sent an email with the customer details so
+       that you can contact them to work out the best dates for
+       installation and delivery. <a href="{{ form }}">Please then fill out this
+       form with thoe dates.</a>
+    </p>
+  {% endif %}
+</div>
+{% endblock %}

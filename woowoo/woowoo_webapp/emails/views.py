@@ -85,7 +85,7 @@ def send_retailer_pickup_date(site_name, pickup_date, yes_link, no_link):
 
 def send_final_confirmation(site_name, pickup_date, delivery_date, installation_date):
     msg_html = render_to_string('emails/installation_final_notifier.html', {
-        'recipient': 'James',
+        'recipient': settings.MANAGER,
         'site_name': site_name,
         'pickup_date': pickup_date,
         'delivery_date': delivery_date,
@@ -97,3 +97,17 @@ def send_final_confirmation(site_name, pickup_date, delivery_date, installation_
                 [settings.MANAGER_EMAIL, settings.CONTRACTOR_EMAIL, settings.CUSTOMER_EMAIL],
                 fail_silently=False,
                 html_message=msg_html)
+
+def send_manager_notification_email(site_name, pickup_date):
+    msg_html = render_to_string('emails/supplier_pickup_date_error_notifier.html', {
+        'recipient': settings.MANAGER,
+        'site_name': site_name,
+        'pickup_date': pickup_date})
+
+    send_mail("Kazuba can't do the pickup date",
+                'plain_text',
+                settings.APPLICATION_EMAIL,
+                [settings.MANAGER_EMAIL],
+                fail_silently=False,
+                html_message=msg_html)
+

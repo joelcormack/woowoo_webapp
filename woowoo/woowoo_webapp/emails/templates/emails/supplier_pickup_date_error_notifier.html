@@ -1,0 +1,10 @@
+{% extends "emails/base.html" %}
+{% block content %}
+
+<h2>Hi {{ recipient }}</h2>
+
+<p>
+  The pickup date {{ pickup_date }} for {{ site_name }} is not suitable for Kazuba. 
+  Please contact them and arrange a pickup date.
+</p>
+{% endblock %}

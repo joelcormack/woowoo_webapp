@@ -1,0 +1,11 @@
+{% extends 'installations/base.html' %}
+{% block content %}
+<div class="form-signin">
+  <h1 class="form-signin--heading">Thank you</h1>
+  {% if confirmation == True %}
+    <p>for confirming the pickup date, we've contacted the shipping company to arrange delivery.</p> 
+  {% else %}
+    <p>for letting us know the date is not suitable, we've sent an email to {{ name }} who will be in touch to arrange a date with you.</p>
+  {% endif %}
+</div>
+{% endblock %}

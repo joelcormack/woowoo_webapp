@@ -13,7 +13,7 @@ from .zoho import Zoho
 from emails.views import send_provisional_date, \
 send_installation_and_delivery_form, send_confirmation_email, \
 send_retailer_pickup_date, send_installation_exists_notifier, \
-send_final_confirmation
+send_final_confirmation, send_manager_notification_email
 
 from datetime import date, timedelta
 
@@ -104,39 +104,30 @@ class ContractorConfirmation(LoginRequiredMixin, View):
 
         if answer == 'yes':
             installation.contractor_confirmed = True
-            send_installation_and_delivery_form(
-                    answer=answer,
-                    date=installation.provisional_date,
-                    site_name=installation.name,
-                    name=installation.contact_set.first().name,
-                    number=installation.contact_set.first().phone,
-                    email=installation.contact_set.first().email,
-                    form=dates_form_link)
-            return HttpResponse("Thank you for confirming the provisional week, you will be \
-                    sent an email with the customers details so that you can get in touch \
-                    with them to arrange suitable installation and delivery dates. \
-                    Please fill in the form linked in the email. Here's a link%s" % dates_form_link)
-
         else:
-            #redirect contractor to form to pick date that suits them
-            print "contractor not confirmed"
             installation.contractor_confirmed = False
-            send_installation_and_delivery_form(
-                    answer=answer,
-                    date=installation.provisional_date,
-                    site_name=installation.name,
-                    name=installation.contact_set.first().name,
-                    number=installation.contact_set.first().phone,
-                    email=installation.contact_set.first().email,
-                    form=dates_form_link)
-            return HttpResponse("Thank you for your honesty, you have been sent another email \
-                    with the customers details so that you can get in touch with them to \
-                    arrange suitable installation and delivery dates. Please fill in the form \
-                    linked in the email.")
+
+        send_installation_and_delivery_form(
+                answer=answer,
+                date=installation.provisional_date,
+                site_name=installation.name,
+                name=installation.contact_set.first().name,
+                number=installation.contact_set.first().phone,
+                email=installation.contact_set.first().email,
+                form=dates_form_link)
+
+        return render(request, 'installations/contractor_confirmation.html',
+                    context={"name": settings.MANAGER,
+                             "form" : dates_form_link,
+                             "confirmation" : installation.contractor_confirmed})
+
+
 @login_required
 def set_dates(request, *args, **kwargs):
+
     installation_id = kwargs.get('installation_id')
     installation=Installation.objects.get(id=installation_id)
+
     if request.method == 'POST':
         form = ContractorForm(request.POST)
         if form.is_valid():
@@ -151,7 +142,7 @@ def set_dates(request, *args, **kwargs):
                 site_name=installation.name,
                 delivery_date=delivery_date,
                 installation_date=installation_date)
-            #send purchase order
+
             kf = KashFlow()
             purchase_order = kf.create_purchase_order(installation.name)
             for product in installation.product_set.all():
@@ -219,8 +210,9 @@ Contact: Nicolas Flamen +33(0)6 28 33 10 89')
             po_confirmation = kf.send_purchase_order(purchase_order)
             send_final_confirmation(installation.name, installation.pickup_date, installation.delivery_date, installation.installation_date)
         else:
-            #redirect contractor to form to pick date that suits them
-            print "contractor not confirmed"
             installation.retailer_confirmed = False
+            send_manager_notification_email(installation.name, installation.pickup_date)
 
-        return HttpResponse(installation.retailer_confirmed)
+        return render(request, 'installations/supplier_form_redirect.html',
+                context={"confirmation": installation.retailer_confirmed,
+                         "name" : settings.MANAGER })
