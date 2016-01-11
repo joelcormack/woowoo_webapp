@@ -83,23 +83,17 @@ def send_retailer_pickup_date(site_name, pickup_date, yes_link, no_link):
                 fail_silently=False,
                 html_message=msg_html)
 
-def send_final_confirmation(links):
-    body="""
-Hello James, customer and contractor,
+def send_final_confirmation(site_name, pickup_date, delivery_date, installation_date):
+    msg_html = render_to_string('emails/installation_final_notifier.html', {
+        'recipient': 'James',
+        'site_name': site_name,
+        'pickup_date': pickup_date,
+        'delivery_date': delivery_date,
+        'installation_date': installation_date})
 
-Installation and delivery dates below have been booked and conrimed. If these are wrong please get in contact otherwise you can view the status of the order here....
-
-Name of site: %s
-Pikup Date: %s
-Delivery Date: %s
-Installation Date: %s
-
-Thanks,
-
-Woo Woo Web App
-""" % links
-    send_mail('Installation and Delivery Confirmation',
-                body,
+    send_mail('Installation dates confirmation',
+                'plain_text',
                 settings.APPLICATION_EMAIL,
                 [settings.MANAGER_EMAIL, settings.CONTRACTOR_EMAIL, settings.CUSTOMER_EMAIL],
-                fail_silently=False)
+                fail_silently=False,
+                html_message=msg_html)

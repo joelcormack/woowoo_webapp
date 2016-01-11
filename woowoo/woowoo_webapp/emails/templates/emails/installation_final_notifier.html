@@ -1,0 +1,17 @@
+{% extends "emails/base.html" %}
+{% block content %}
+
+<h2>Hi {{ recipient }}</h2>
+
+<p>
+  Installation and delivery dates below have been booked and confrimed. 
+  If these are wrong please get in contact.</p>
+
+<p>
+<strong>Name of site:</strong> {{ site }}<br>
+<strong>Pikup Date:</strong> {{ pickup_date }}<br>
+<strong>Delivery Date:</strong> {{ delivery_date }}<br>
+<strong>Installation Date:</strong> {{ installation_date}}<br>
+</p>
+
+{% endblock %}

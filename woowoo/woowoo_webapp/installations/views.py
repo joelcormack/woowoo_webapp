@@ -12,7 +12,8 @@ from .kashflow import KashFlow
 from .zoho import Zoho
 from emails.views import send_provisional_date, \
 send_installation_and_delivery_form, send_confirmation_email, \
-send_retailer_pickup_date, send_installation_exists_notifier
+send_retailer_pickup_date, send_installation_exists_notifier, \
+send_final_confirmation
 
 from datetime import date, timedelta
 
@@ -216,6 +217,7 @@ Contact: Nicolas Flamen +33(0)6 28 33 10 89')
             else:
                 kf.add_note(purchase_order, "Delivery Instructions: Customer doesn't have a  forklift.")
             po_confirmation = kf.send_purchase_order(purchase_order)
+            send_final_confirmation(installation.name, installation.pickup_date, installation.delivery_date, installation.installation_date)
         else:
             #redirect contractor to form to pick date that suits them
             print "contractor not confirmed"
