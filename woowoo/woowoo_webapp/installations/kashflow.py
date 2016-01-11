@@ -95,9 +95,17 @@ class KashFlow:
             print e
 
 
-    def send_purchase_order(self, receipt_number):
+    def send_purchase_order(self, receipt_number, from_name, from_email, to_email, subject, content):
         try:
-            emailed_purchase_order = self.client.service.EmailPurchaseOrder(self.username, self.password, receipt_number, 'joel.greta@gmail.com', 'Joel Cormack', 'Invoice Hello', 'Hi heres your invoice', 'joel@joelcormack.com')
+            emailed_purchase_order = self.client.service.EmailPurchaseOrder(
+                    self.username,
+                    self.password,
+                    receipt_number,
+                    from_email,
+                    from_name,
+                    subject,
+                    content,
+                    email_to)
         except WebFault, e:
             print e
         print "trying with purchase number: ", emailed_purchase_order

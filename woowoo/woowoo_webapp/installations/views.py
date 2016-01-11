@@ -153,7 +153,29 @@ def set_dates(request, *args, **kwargs):
                                                 installation.address_one,
                                                 installation.address_two,
                                                 installation.postcode))
-            po_confirmation = kf.send_purchase_order(purchase_order)
+            content = """
+Dear Kazuba SARL,
+
+Please find attached the Purchase Order %s
+
+We would like to arrange collection for %s
+
+Please confirm that we are able to collect it on this date by replying to the other email we have sent you.
+
+Kind regards,
+
+Accounts
+
+WooWoo
+""" % (purchase_order, installation.pickup_date)
+
+            po_confirmation = kf.send_purchase_order(
+                    purchase_order,
+                    settings.APPLICATION_ACCOUNTS_EMAIL,
+                    settings.APPLICATION_ACCOUNTS_NAME,
+                    'Email Purchases %s' % purchase_order,
+                    content,
+                    settings.KF_SUPPLIER_EMAIL)
             base_url = settings.SITE_URL + 'installations/'
             department = "/retailer/"
             pk = installation.id
@@ -206,8 +228,24 @@ Contact: Nicolas Flamen +33(0)6 28 33 10 89')
             if installation.has_forklift:
                 kf.add_note(purchase_order, 'Delivery Instructions: Customer has forklift.')
             else:
-                kf.add_note(purchase_order, "Delivery Instructions: Customer doesn't have a  forklift.")
-            po_confirmation = kf.send_purchase_order(purchase_order)
+                content = """
+Dear Kuehne + Nagel,
+
+Please find attached the Purchase Order %s.
+
+We would like to arrange collection.
+
+Please confirm the price and dates for loading/unloading.
+""" % purchase_order
+
+                kf.add_note(purchase_order, "Delivery Instructions: Customer doesn't have a forklift.")
+            po_confirmation = kf.send_purchase_order(
+                    purchase_order,
+                    settings.APPLICATION_SHIPPING_EMAIL,
+                    setting.APPLICATION_SHIPPING_NAME,
+                    'Transportation Order - %s' % purchase_order,
+                    content,
+                    settings.KF_SHIPPING_EMAIL_TO)
             send_final_confirmation(installation.name, installation.pickup_date, installation.delivery_date, installation.installation_date)
         else:
             installation.retailer_confirmed = False
