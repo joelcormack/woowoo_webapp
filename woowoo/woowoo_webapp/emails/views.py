@@ -56,7 +56,7 @@ def send_installation_and_delivery_form(answer, date, site_name, name, number, e
 
 def send_confirmation_email(site_name, delivery_date, installation_date):
     msg_html = render_to_string('emails/customer_and_contractor_confirmation_notifier.html', {
-        'recipient': 'James',
+        'recipient': settings.MANAGER,
         'site_name': site_name,
         'delivery_date': delivery_date,
         'installation_date': installation_date})
@@ -70,7 +70,7 @@ def send_confirmation_email(site_name, delivery_date, installation_date):
 
 def send_retailer_pickup_date(site_name, pickup_date, yes_link, no_link):
     msg_html = render_to_string('emails/retailer_pickup_date_notifier.html', {
-        'recipient': 'Kazuba',
+        'recipient': settings.SUPPLIER,
         'site_name': site_name,
         'pickup_date': pickup_date,
         'yes':yes_link,
@@ -79,7 +79,7 @@ def send_retailer_pickup_date(site_name, pickup_date, yes_link, no_link):
     send_mail('Installation and Delivery Confirmation',
                 'plain_text',
                 settings.APPLICATION_EMAIL,
-                [settings.MANAGER_EMAIL, settings.CONTRACTOR_EMAIL],
+                [settings.SUPPLIER_EMAIL],
                 fail_silently=False,
                 html_message=msg_html)
 
