@@ -105,7 +105,7 @@ class KashFlow:
                     from_name,
                     subject,
                     content,
-                    email_to)
+                    to_email)
         except WebFault, e:
             print e
         print "trying with purchase number: ", emailed_purchase_order
