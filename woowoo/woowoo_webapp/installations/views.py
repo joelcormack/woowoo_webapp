@@ -215,7 +215,7 @@ Weight: 350kg
         unloading_date = installation.delivery_date
         if answer == 'yes':
             installation.retailer_confirmed = True
-            kf = KashFlow(recipient=settings.KF_SHIPPINGR_COMPANY,
+            kf = KashFlow(recipient=settings.KF_SHIPPING_COMPANY,
                     recipient_id=settings.KF_SHIPPING_COMPANY_ID)
             purchase_order = kf.create_purchase_order()
             kf.add_item(purchase_order, installation.product_set.count(), settings.CARRIAGE, DESCRIPTION, 0)
