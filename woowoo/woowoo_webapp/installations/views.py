@@ -177,9 +177,9 @@ WooWoo
                     purchase_order,
                     settings.APPLICATION_ACCOUNTS_EMAIL,
                     settings.APPLICATION_ACCOUNTS_NAME,
+                    settings.KF_SUPPLIER_EMAIL,
                     'Email Purchases %s' % purchase_order,
-                    content,
-                    settings.KF_SUPPLIER_EMAIL)
+                    content)
             base_url = settings.SITE_URL + 'installations/'
             department = "/retailer/"
             pk = installation.id
@@ -250,9 +250,9 @@ Please confirm the price and dates for loading/unloading.
                     purchase_order,
                     settings.APPLICATION_SHIPPING_EMAIL,
                     settings.APPLICATION_SHIPPING_NAME,
+                    settings.KF_SHIPPING_EMAIL_TO,
                     'Transportation Order - %s' % purchase_order,
-                    content,
-                    settings.KF_SHIPPING_EMAIL_TO)
+                    content)
             send_final_confirmation(installation.name, installation.pickup_date, installation.delivery_date, installation.installation_date)
         else:
             installation.retailer_confirmed = False
