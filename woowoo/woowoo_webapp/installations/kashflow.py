@@ -95,7 +95,7 @@ class KashFlow:
             print e
 
 
-    def send_purchase_order(self, receipt_number, from_name, from_email, to_email, subject, content):
+    def send_purchase_order(self, receipt_number, from_email, from_name, subject, content, to_email):
         try:
             emailed_purchase_order = self.client.service.EmailPurchaseOrder(
                     self.username,
