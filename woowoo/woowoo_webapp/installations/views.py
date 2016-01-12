@@ -249,7 +249,7 @@ Please confirm the price and dates for loading/unloading.
             po_confirmation = kf.send_purchase_order(
                     purchase_order,
                     settings.APPLICATION_SHIPPING_EMAIL,
-                    setting.APPLICATION_SHIPPING_NAME,
+                    settings.APPLICATION_SHIPPING_NAME,
                     'Transportation Order - %s' % purchase_order,
                     content,
                     settings.KF_SHIPPING_EMAIL_TO)
