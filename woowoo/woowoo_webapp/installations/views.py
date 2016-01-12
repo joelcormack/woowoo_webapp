@@ -143,16 +143,20 @@ def set_dates(request, *args, **kwargs):
                 delivery_date=delivery_date,
                 installation_date=installation_date)
 
-            kf = KashFlow()
+            kf = KashFlow(
+                    recipient=settings.KF_SUPPLIER_NAME,
+                    recipient_id=settings.KF_SUPPLIER_ID)
             purchase_order = kf.create_purchase_order(installation.name)
             for product in installation.product_set.all():
                 if product.quantity > 0:
-                    kf.add_item(purchase_order, product.quantity,settings.SALES_CODE, product.name, product.rate)
+                    kf.add_item(purchase_order, product.quantity, settings.SALES_CODE, product.name, product.rate)
             kf.add_note(purchase_order,
-                    '\n%s, \n%s, \n%s, \n%s' % (installation.name,
+                    'Delivery Address:\n%s, \n%s, \n%s, \n%s' % (installation.name,
                                                 installation.address_one,
                                                 installation.address_two,
                                                 installation.postcode))
+                    kf.add_note(purchase_order,
+                    'Contact: %s %s' % (installation.contact_set.first().name, installation.contact_set.first().phone))
             content = """
 Dear Kazuba SARL,
 
@@ -211,7 +215,8 @@ Weight: 350kg
         unloading_date = installation.delivery_date
         if answer == 'yes':
             installation.retailer_confirmed = True
-            kf = KashFlow()
+            kf = KashFlow(recipient=settings.KF_SHIPPINGR_COMPANY,
+                    recipient_id=settings.KF_SHIPPING_COMPANY_ID)
             purchase_order = kf.create_purchase_order()
             kf.add_item(purchase_order, installation.product_set.count(), settings.CARRIAGE, DESCRIPTION, 0)
             kf.add_note(purchase_order, 'Loading Date: %s \nUnloading Date: %s' %(loading_date, unloading_date))
