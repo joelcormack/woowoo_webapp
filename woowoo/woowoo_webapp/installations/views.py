@@ -233,7 +233,9 @@ Contact: Nicolas Flamen +33(0)6 28 33 10 89')
             if installation.has_forklift:
                 kf.add_note(purchase_order, 'Delivery Instructions: Customer has forklift.')
             else:
-                content = """
+                kf.add_note(purchase_order, "Delivery Instructions: Customer doesn't have a forklift.")
+
+            content = """
 Dear Kuehne + Nagel,
 
 Please find attached the Purchase Order %s.
@@ -243,7 +245,7 @@ We would like to arrange collection.
 Please confirm the price and dates for loading/unloading.
 """ % purchase_order
 
-                kf.add_note(purchase_order, "Delivery Instructions: Customer doesn't have a forklift.")
+
             po_confirmation = kf.send_purchase_order(
                     purchase_order,
                     settings.APPLICATION_SHIPPING_EMAIL,
