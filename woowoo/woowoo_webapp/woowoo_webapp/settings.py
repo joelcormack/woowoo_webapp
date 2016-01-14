@@ -32,7 +32,7 @@ ALLOWED_HOSTS = [u'joelcormack.pythonanywhere.com']
 #KASHFLOW TEST
 KF_TEST_RECIPIENT_ID = "4580634"
 KF_TEST_RECIPIENT_NAME = "Test"
-KF_TEST_EMAIL = 'joel@joelcormack.com'
+KF_TEST_EMAIL = 'joel@waterlesstoilets.co.uk'
 
 # Application definition
 

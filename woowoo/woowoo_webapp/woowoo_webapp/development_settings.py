@@ -23,9 +23,9 @@ if DEBUG == True:
     #KF_SHIPPING_COMPANY = KF_TEST_RECIPIENT_NAME
     #KF_SUPPLIER_ID = KF_TEST_RECIPIENT_ID
     #KF_SUPPLIER = KF_TEST_RECIPIENT_NAME
-    SUPPLIER_EMAIL = 'joel@joelcormack.com'
+    SUPPLIER_EMAIL = 'joel@waterlesstoilets.co.uk'
     KF_SUPPLIER_EMAIL = SUPPLIER_EMAIL
-    KF_SHIPPING_EMAIL_TO = "joel@joelcormack.com"
+    KF_SHIPPING_EMAIL_TO = "joel@waterlesstoilets.co.uk"
 
 
 
