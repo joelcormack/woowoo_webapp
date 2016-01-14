@@ -12,7 +12,7 @@ from .kashflow import KashFlow
 from .zoho import Zoho
 from emails.views import send_provisional_date, \
 send_installation_and_delivery_form, send_confirmation_email, \
-send_retailer_pickup_date, send_installation_exists_notifier, \
+send_supplier_pickup_date, send_installation_exists_notifier, \
 send_final_confirmation, send_manager_notification_email
 
 from datetime import date, timedelta
@@ -136,6 +136,8 @@ def set_dates(request, *args, **kwargs):
             installation = Installation.objects.get(id=installation_id)
             installation.delivery_date = delivery_date
             installation.installation_date = installation_date
+            installation.contractor_confirmed = True
+            installation.customer_confirmed = True
             installation.save()
             installation.set_pickup()
             send_confirmation_email(
@@ -181,11 +183,11 @@ WooWoo
                     content,
                     settings.KF_SUPPLIER_EMAIL)
             base_url = settings.SITE_URL + 'installations/'
-            department = "/retailer/"
+            department = "/supplier/"
             pk = installation.id
             yes_link = base_url + pk + department + "?confirm=yes"
             no_link = base_url + pk + department + "?confirm=no"
-            send_retailer_pickup_date(
+            send_supplier_pickup_date(
                     site_name=installation.name,
                     pickup_date=installation.pickup_date.strftime('%d/%m/%Y'),
                     yes_link=yes_link,
@@ -214,7 +216,7 @@ Weight: 350kg
         loading_date = installation.pickup_date
         unloading_date = installation.delivery_date
         if answer == 'yes':
-            installation.retailer_confirmed = True
+            installation.supplier_confirmed = True
             kf = KashFlow(recipient=settings.KF_SHIPPING_COMPANY,
                     recipient_id=settings.KF_SHIPPING_COMPANY_ID)
             purchase_order = kf.create_purchase_order()
@@ -255,9 +257,9 @@ Please confirm the price and dates for loading/unloading.
                     settings.KF_SHIPPING_EMAIL_TO)
             send_final_confirmation(installation.name, installation.pickup_date, installation.delivery_date, installation.installation_date)
         else:
-            installation.retailer_confirmed = False
+            installation.supplier_confirmed = False
             send_manager_notification_email(installation.name, installation.pickup_date)
 
         return render(request, 'installations/supplier_form_redirect.html',
-                context={"confirmation": installation.retailer_confirmed,
+                context={"confirmation": installation.supplier_confirmed,
                          "name" : settings.MANAGER })

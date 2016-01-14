@@ -10,7 +10,7 @@ class Installation(models.Model):
     """
     Models an installation with a date set on creation, installation date,
     delivery date and pickup date, booleans to monitor stages of confirmations for
-    contractor, haulier, customer and retailer and associated sites and contacts.
+    contractor, haulier, customer and supplier and associated sites and contacts.
     """
     def set_pickup(self):
         #calc pickup date
@@ -49,7 +49,7 @@ class Installation(models.Model):
     haulier_confirmed = models.BooleanField(default=False)
     haulier_receipt = models.FileField(upload_to='haulier_receipts/%Y/%m/%d', null=True)
     customer_confirmed = models.BooleanField(default=False)
-    retailer_confirmed = models.BooleanField(default=False)
+    supplier_confirmed = models.BooleanField(default=False)
     has_forklift = models.BooleanField(default=False)
 
     def __unicode__(self):
@@ -59,6 +59,24 @@ class Installation(models.Model):
         super(Installation, self).save(*args, **kwargs) #call original save method
         self.set_provisional()
         super(Installation, self).save(*args, **kwargs) #call original save method
+
+    def get_status(self):
+        """
+        1 = customer and contractor need to confirm
+        2 = supplier needs to confirm pickup date
+        3 = shipping company needs to confirm dates
+        4 = all dates confirmed
+        """
+        if customer_confirmed:
+            if supplier_confirmed:
+                if shipping_confirmed:
+                    return 4
+                else:
+                    return 3
+            else:
+                return 2
+        else:
+            return 1
 
 
 class Contact(models.Model):
@@ -110,8 +128,6 @@ class Product(models.Model):
         super(Product, self).save(*args, **kwargs) #call original save method
         self.set_rate()
         super(Product, self).save(*args, **kwargs) #call original save method
-
-
 
 
 from django_mailbox.signals import message_received

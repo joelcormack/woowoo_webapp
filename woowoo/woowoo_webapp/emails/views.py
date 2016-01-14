@@ -68,8 +68,8 @@ def send_confirmation_email(site_name, delivery_date, installation_date):
         fail_silently=False,
         html_message=msg_html)
 
-def send_retailer_pickup_date(site_name, pickup_date, yes_link, no_link):
-    msg_html = render_to_string('emails/retailer_pickup_date_notifier.html', {
+def send_supplier_pickup_date(site_name, pickup_date, yes_link, no_link):
+    msg_html = render_to_string('emails/supplier_pickup_date_notifier.html', {
         'recipient': settings.SUPPLIER,
         'site_name': site_name,
         'pickup_date': pickup_date,
