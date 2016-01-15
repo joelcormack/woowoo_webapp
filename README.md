@@ -3,6 +3,16 @@ WooWoo WebApp
 
 Automates organising the order process of a WooWoo product through simple yes or no emails, date input forms and b2b communication. 
 
+Process:
+-------
+1. zoho triggers creation of installation on webapp
+2. email sent to contractor to confirm provisional date
+3. email sent to contractor to set dates for installation and delivery
+4. once dates are set purchase order and email are sent to supplier to confrim pickup date
+5. once pickup date is confirmed, purchase order is sent to shipping company
+6. once shipping company is confirmed then final email is sent to customer, contractor and woowoo rep to confirm installation
+
+
 Detailed Process:
 ----------------
 1. Customer completes an order with WooWoo

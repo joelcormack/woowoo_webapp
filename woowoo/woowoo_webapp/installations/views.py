@@ -106,7 +106,6 @@ class ContractorConfirmation(LoginRequiredMixin, View):
             installation.contractor_confirmed = True
         else:
             installation.contractor_confirmed = False
-
         send_installation_and_delivery_form(
                 answer=answer,
                 date=installation.provisional_date,
@@ -152,12 +151,12 @@ def set_dates(request, *args, **kwargs):
             for product in installation.product_set.all():
                 if product.quantity > 0:
                     kf.add_item(purchase_order, product.quantity, settings.SALES_CODE, product.name, product.rate)
-                    kf.add_note(purchase_order,
+            kf.add_note(purchase_order,
                     'Delivery Address:\n%s, \n%s, \n%s, \n%s' % (installation.name,
-                                                installation.address_one,
-                                                installation.address_two,
-                                                installation.postcode))
-                    kf.add_note(purchase_order,
+                                                                 installation.address_one,
+                                                                 installation.address_two,
+                                                                 installation.postcode))
+            kf.add_note(purchase_order,
                     'Contact: %s %s' % (installation.contact_set.first().name, installation.contact_set.first().phone))
             content = """
 Dear Kazuba SARL,
@@ -202,7 +201,7 @@ WooWoo
             'installation_id': installation_id,
             'site_name': installation.name})
 
-class RetailerConfirmation(View):
+class SupplierConfirmation(View):
 
 
     def get(self, request, *args, **kwargs):
@@ -217,6 +216,7 @@ Weight: 350kg
         unloading_date = installation.delivery_date
         if answer == 'yes':
             installation.supplier_confirmed = True
+            installation.save()
             kf = KashFlow(recipient=settings.KF_SHIPPING_COMPANY,
                     recipient_id=settings.KF_SHIPPING_COMPANY_ID)
             purchase_order = kf.create_purchase_order()
@@ -258,6 +258,7 @@ Please confirm the price and dates for loading/unloading.
             send_final_confirmation(installation.name, installation.pickup_date, installation.delivery_date, installation.installation_date)
         else:
             installation.supplier_confirmed = False
+            installation.save()
             send_manager_notification_email(installation.name, installation.pickup_date)
 
         return render(request, 'installations/supplier_form_redirect.html',

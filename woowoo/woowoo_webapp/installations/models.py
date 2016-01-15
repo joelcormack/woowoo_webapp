@@ -10,7 +10,7 @@ class Installation(models.Model):
     """
     Models an installation with a date set on creation, installation date,
     delivery date and pickup date, booleans to monitor stages of confirmations for
-    contractor, haulier, customer and supplier and associated sites and contacts.
+    contractor, shipping, customer and supplier and associated sites and contacts.
     """
     def set_pickup(self):
         #calc pickup date
@@ -46,8 +46,8 @@ class Installation(models.Model):
     delivery_date = models.DateField(null=True)
     pickup_date = models.DateField(null=True)
     contractor_confirmed = models.BooleanField(default=False)
-    haulier_confirmed = models.BooleanField(default=False)
-    haulier_receipt = models.FileField(upload_to='haulier_receipts/%Y/%m/%d', null=True)
+    shipping_confirmed = models.BooleanField(default=False)
+    shipping_receipt = models.FileField(upload_to='shipping_receipts/%Y/%m/%d', null=True)
     customer_confirmed = models.BooleanField(default=False)
     supplier_confirmed = models.BooleanField(default=False)
     has_forklift = models.BooleanField(default=False)
@@ -67,9 +67,9 @@ class Installation(models.Model):
         3 = shipping company needs to confirm dates
         4 = all dates confirmed
         """
-        if customer_confirmed:
-            if supplier_confirmed:
-                if shipping_confirmed:
+        if self.customer_confirmed:
+            if self.supplier_confirmed:
+                if self.shipping_confirmed:
                     return 4
                 else:
                     return 3
@@ -137,7 +137,7 @@ from installations.pdf_date_extractor import extract_dates
 def match_receipt(sender, message, **args):
     """
     extract dates from attached reciept to match an exsiting
-    installation as confirmation from haulier
+    installation as confirmation from shipping
     """
     if message.attachments.count() > 0:
         if file_is_pdf(message.attachments.first()):
@@ -149,20 +149,20 @@ def match_dates(message,dates):
     installations = Installation.objects.filter(
                 contractor_confirmed=True
             ).filter(
-                haulier_confirmed=False)
+                shipping_confirmed=False)
     for installation in installations:
         if installation.installation_date.strftime("%d/%m/%Y") == dates[0]:
             print "matched installation date"
             if installation.delivery_date.strftime("%d/%m/%Y") == dates[1]:
                 print "matched delivery date"
                 attachment = message.attachments.first()
-                installation.haulier_receipt = attachment.document.url
-                installation.haulier_confirmed = True
+                installation.shipping_receipt = attachment.document.url
+                installation.shipping_confirmed = True
                 installation.save()
-                print "saved haulier receipt for %s, haulier_confirmed = %s, hauiler_receipt = %s" % (
+                print "saved shipping receipt for %s, shipping_confirmed = %s, hauiler_receipt = %s" % (
                         installation,
-                        installation.haulier_confirmed,
-                        installation.haulier_receipt)
+                        installation.shipping_confirmed,
+                        installation.shipping_receipt)
 
 def file_is_pdf(filename):
     if re.search('\.pdf$', filename.get_filename()):
