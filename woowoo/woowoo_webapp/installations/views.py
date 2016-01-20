@@ -58,7 +58,19 @@ class CreateInstallation(View):
         department = "/contractor/"
         yes_link = base_url + pk + department + "?confirm=yes"
         no_link = base_url + pk + department + "?confirm=no"
-        send_provisional_date(date=installation.provisional_date, yes=yes_link, no=no_link)
+
+        if "GGM" in installation.installation_method:
+            send_provisional_date(date=installation.provisional_date,
+                    yes=yes_link,
+                    no=no_link,
+                    recipient=settings.CONTRACTOR,
+                    email_to=settings.CONTRACTOR_EMAIL)
+        else:
+            send_provisional_date(date=installation.provisional_date,
+                    yes=yes_link,
+                    no=no_link,
+                    recipient=settings.MANAGER,
+                    email_to=settings.MANAGER_EMAIL)
         return HttpResponse("Installation successfully added")
 
 
@@ -68,7 +80,10 @@ class CreateInstallation(View):
                 name=pot_data.get('potential_name', ''),
                 address_one=pot_data.get('site_address', ''),
                 address_two=pot_data.get('site_address_two', ''),
-                postcode=pot_data.get('site_postcode', ''))
+                postcode=pot_data.get('site_postcode', ''),
+                forklift_available=pot_data.get('forklift', ''),
+                installation_method=pot_data.get('install_method', ''),
+                gmaps_link=pot_data.get('gmap_link', ''))
         installation.save()
         print "Added installation at site : ", installation
         return installation.id
@@ -232,7 +247,7 @@ Contact: Nicolas Flamen +33(0)6 28 33 10 89')
                 installation.address_two,
                 installation.postcode))
             kf.add_note(purchase_order, 'Contact: %s - %s' % (installation.contact_set.first(), installation.contact_set.first().phone))
-            if installation.has_forklift:
+            if installation.forklift_available:
                 kf.add_note(purchase_order, 'Delivery Instructions: Customer has forklift.')
             else:
                 kf.add_note(purchase_order, "Delivery Instructions: Customer doesn't have a forklift.")

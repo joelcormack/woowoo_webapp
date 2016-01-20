@@ -32,6 +32,9 @@ class Zoho:
                 'Site Street':'site_address',
                 'Site Street 2':'site_address_two',
                 'Site Post Code':'site_postcode',
+                'Installation Method':'install_method',
+                'Google Maps Link':'gmap_link',
+                'Forklift Available':'forklift',
                 'CONTACTID':'contact_id'}
     product = { 'KL1':'KL1',
                 'KL2 prm':'KL2 prm',

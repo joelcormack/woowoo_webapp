@@ -32,6 +32,11 @@ class Installation(models.Model):
             return day + timedelta(days_ahead)
         self.provisional_date = next_weekday(self.created_date + timedelta(days=42), 0)
 
+    INSTALLATION_METHODS = (
+            ('SI', 'Self Install'),
+            ('CI', 'Contractor Install'),
+            ('GG', 'GGM Install'),
+            ('SG', 'Self Install with GGM Assistance'))
 
     id = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=30)
@@ -39,6 +44,9 @@ class Installation(models.Model):
     address_two = models.CharField(max_length=50, null=True)
     postcode = models.CharField(max_length=10)
     created_date = models.DateField(auto_now_add=True)
+    forklift_available = models.BooleanField(default=False)
+    installation_method = models.CharField(choices=INSTALLATION_METHODS, default='Self Install', max_length=2)
+    gmaps_link = models.URLField(null=True)
 
     #unset on creation
     provisional_date = models.DateField(null=True)
