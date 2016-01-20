@@ -122,7 +122,7 @@ class Product(models.Model):
             ('Ku', 'KLu'),
             ('ST', 'STK'))
 
-    name = models.CharField(choices=PRODUCT_TYPES, max_length=2, null=True)
+    name = models.CharField(choices=PRODUCT_TYPES, max_length=20, null=True)
     quantity = models.IntegerField(default=0, null=True)
     rate = models.DecimalField(null=True, decimal_places=2, max_digits=7)
     #foreign key
