@@ -58,7 +58,6 @@ class Installation(models.Model):
     shipping_receipt = models.FileField(upload_to='shipping_receipts/%Y/%m/%d', null=True)
     customer_confirmed = models.BooleanField(default=False)
     supplier_confirmed = models.BooleanField(default=False)
-    has_forklift = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
