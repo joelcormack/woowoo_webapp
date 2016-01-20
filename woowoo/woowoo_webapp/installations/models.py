@@ -45,7 +45,7 @@ class Installation(models.Model):
     postcode = models.CharField(max_length=10)
     created_date = models.DateField(auto_now_add=True)
     forklift_available = models.BooleanField(default=False)
-    installation_method = models.CharField(choices=INSTALLATION_METHODS, default='Self Install', max_length=2)
+    installation_method = models.CharField(choices=INSTALLATION_METHODS, default='SI', max_length=2)
     gmaps_link = models.URLField(null=True)
 
     #unset on creation
