@@ -42,6 +42,8 @@ class Installation(models.Model):
     name = models.CharField(max_length=30)
     address_one = models.CharField(max_length=50)
     address_two = models.CharField(max_length=50, null=True)
+    city = models.CharField(max_length=50, null=True)
+    county = models.CharField(max_length=50, null=True)
     postcode = models.CharField(max_length=10)
     created_date = models.DateField(auto_now_add=True)
     forklift_available = models.BooleanField(default=False)

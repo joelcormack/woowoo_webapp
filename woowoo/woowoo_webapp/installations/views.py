@@ -75,13 +75,21 @@ class CreateInstallation(View):
 
 
     def add_installation(self, pot_data):
+        forklift = pot_data.get('forklift', '')
+        if forklift == 'true':
+            forklift = True
+        else:
+            forklift = False
+
         installation = Installation(
                 id=pot_data.get('potential_id', ''),
                 name=pot_data.get('potential_name', ''),
                 address_one=pot_data.get('site_address', ''),
                 address_two=pot_data.get('site_address_two', ''),
+                city=pot_data.get('site_city', ''),
+                county=pot_data.get('site_county', ''),
                 postcode=pot_data.get('site_postcode', ''),
-                forklift_available=pot_data.get('forklift', ''),
+                forklift_available=forklift,
                 installation_method=pot_data.get('install_method', ''),
                 gmaps_link=pot_data.get('gmap_link', ''))
         installation.save()
@@ -167,9 +175,11 @@ def set_dates(request, *args, **kwargs):
                 if product.quantity > 0:
                     kf.add_item(purchase_order, product.quantity, settings.SALES_CODE, product.name, product.rate)
             kf.add_note(purchase_order,
-                    'Delivery Address:\n%s, \n%s, \n%s, \n%s' % (installation.name,
+                    'Delivery Address:\n%s, \n%s, \n%s, \n%s, \n%s, \n%s' % (installation.name,
                                                                  installation.address_one,
                                                                  installation.address_two,
+                                                                 installation.city,
+                                                                 installation.county,
                                                                  installation.postcode))
             kf.add_note(purchase_order,
                     'Contact: %s %s' % (installation.contact_set.first().name, installation.contact_set.first().phone))
@@ -242,9 +252,11 @@ SARL Kazuba \n\
 18, Chemin du trou de Fourque \n\
 13200 Arles \n\
 Contact: Nicolas Flamen +33(0)6 28 33 10 89')
-            kf.add_note(purchase_order, 'Unloading: \n%s\n%s\n%s\n%s' % (installation.name,
+            kf.add_note(purchase_order, 'Unloading: \n%s, \n%s, \n%s, \n%s, \n%s, \n%s' % (installation.name,
                 installation.address_one,
                 installation.address_two,
+                installation.city,
+                installation.county,
                 installation.postcode))
             kf.add_note(purchase_order, 'Contact: %s - %s' % (installation.contact_set.first(), installation.contact_set.first().phone))
             if installation.forklift_available:

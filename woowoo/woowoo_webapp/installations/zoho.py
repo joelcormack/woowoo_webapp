@@ -31,6 +31,8 @@ class Zoho:
                 'Potential Name':'potential_name',
                 'Site Street':'site_address',
                 'Site Street 2':'site_address_two',
+                'Site City':'site_city',
+                'Site County':'site_county',
                 'Site Post Code':'site_postcode',
                 'Installation Method':'install_method',
                 'Google Maps Link':'gmap_link',
@@ -45,7 +47,7 @@ class Zoho:
                 'CONTACTID' : 'contact_id',
                 'First Name': 'first_name',
                 'Last Name': 'last_name',
-                'Phone' : 'phone',
+                'Phone (main)' : 'phone',
                 'Email': 'email'}
 
     def extract_potential_data(self, potential_json):
