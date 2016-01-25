@@ -156,7 +156,6 @@ def match_receipt(sender, message, **args):
             match_dates(message,dates)
 
 def match_dates(message,dates):
-    import ipdb; ipdb.set_trace()
     installations = Installation.objects.filter(
                 contractor_confirmed=True
             ).filter(
