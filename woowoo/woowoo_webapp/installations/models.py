@@ -148,6 +148,7 @@ def match_receipt(sender, message, **args):
     extract dates from attached reciept to match an exsiting
     installation as confirmation from shipping
     """
+    print "message received in webapp"
     if message.attachments.count() > 0:
         if file_is_pdf(message.attachments.first()):
             dates = extract_dates(message)
@@ -155,12 +156,13 @@ def match_receipt(sender, message, **args):
             match_dates(message,dates)
 
 def match_dates(message,dates):
+    import ipdb; ipdb.set_trace()
     installations = Installation.objects.filter(
                 contractor_confirmed=True
             ).filter(
                 shipping_confirmed=False)
     for installation in installations:
-        if installation.installation_date.strftime("%d/%m/%Y") == dates[0]:
+        if installation.pickup_date.strftime("%d/%m/%Y") == dates[0]:
             print "matched installation date"
             if installation.delivery_date.strftime("%d/%m/%Y") == dates[1]:
                 print "matched delivery date"
