@@ -1,0 +1,18 @@
+{% extends "emails/base.html" %}
+{% block content %}
+
+<h2>Hi {{ recipient }}</h2>
+
+<p>
+  Installation, pickup and delivery dates below have been confirmed by customer, contrator and supplier. 
+  A purchase order has been sent to the shipping company and we are waiting for their confirmation.
+</p>
+
+<p>
+<strong>Name of site:</strong> {{ installation.name }}<br>
+<strong>Pikup Date:</strong> {{ installation.pickup_date }}<br>
+<strong>Delivery Date:</strong> {{ installation.delivery_date }}<br>
+<strong>Installation Date:</strong> {{ installation.installation_date}}<br>
+</p>
+
+{% endblock %}

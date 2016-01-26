@@ -1,0 +1,11 @@
+{% extends "emails/base.html" %}
+{% block content %}
+
+<h2>Hi {{ recipient }}</h2>
+
+<p>
+  Your toilet has been ordered and will be delivered on<br>
+  <h3>{{ installation.delivery_date|date:"D d M Y" }}</h3>
+</p>
+<p>Please <a href="mailto:info@waterlesstoilets.co.uk">send us an email</a> if you have questions</p>
+{% endblock %}
