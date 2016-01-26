@@ -26,5 +26,6 @@ urlpatterns = [
     url(r'^(?P<installation_id>[\d]+)/contractor/form/$', views.set_dates,  name='contractor-dates'),
     url(r'^(?P<installation_id>[\d]+)/supplier/$', SupplierConfirmation.as_view(), name='supplier-confirmation'),
     url(r'^(?P<installation_id>[\d]+)/supplier/form/$', views.set_dates,  name='supplier-dates'),
+    url(r'^(?P<installation_id>[\d]+)/notify-contact/$', views.notify_contact,  name='notify-contact'),
     url(r'^add/', CreateInstallation.as_view()),
 ]

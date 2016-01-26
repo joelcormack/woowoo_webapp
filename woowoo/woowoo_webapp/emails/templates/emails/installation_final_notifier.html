@@ -4,14 +4,18 @@
 <h2>Hi {{ recipient }}</h2>
 
 <p>
-  Installation and delivery dates below have been booked and confrimed. 
+  Installation, pickup and delivery dates below have been booked and confrimed by all parties.
   If these are wrong please get in contact.</p>
 
+<p>If these are correct please inform the contact by clicking the button below to send them an email.</p>
+
+<p><a href="{{ domain }}{% url 'notify-contact' installation.id %}" class="button">Notify {{ contact_name }}</a></p>
+
 <p>
-<strong>Name of site:</strong> {{ site }}<br>
-<strong>Pikup Date:</strong> {{ pickup_date }}<br>
-<strong>Delivery Date:</strong> {{ delivery_date }}<br>
-<strong>Installation Date:</strong> {{ installation_date}}<br>
+<strong>Name of site:</strong> {{ installation.name }}<br>
+<strong>Pikup Date:</strong> {{ installation.pickup_date }}<br>
+<strong>Delivery Date:</strong> {{ installation.delivery_date }}<br>
+<strong>Installation Date:</strong> {{ installation.installation_date}}<br>
 </p>
 
 {% endblock %}

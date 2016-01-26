@@ -1,9 +1,11 @@
 from __future__ import unicode_literals
 
+from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db import models
 from decimal import *
 from datetime import date, timedelta
+from emails.views import send_final_confirmation
 import re
 
 class Installation(models.Model):
@@ -173,6 +175,8 @@ def match_dates(message,dates):
                         installation,
                         installation.shipping_confirmed,
                         installation.shipping_receipt)
+                send_final_confirmation(installation)
+
 
 def file_is_pdf(filename):
     if re.search('\.pdf$', filename.get_filename()):

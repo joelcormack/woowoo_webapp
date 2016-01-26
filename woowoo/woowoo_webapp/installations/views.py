@@ -13,7 +13,8 @@ from .zoho import Zoho
 from emails.views import send_provisional_date, \
 send_installation_and_delivery_form, send_confirmation_email, \
 send_supplier_pickup_date, send_installation_exists_notifier, \
-send_final_confirmation, send_manager_notification_email
+send_all_dates_confirmation, send_manager_notification_email, \
+send_confirmation_to_contact
 
 from datetime import date, timedelta
 
@@ -282,7 +283,7 @@ Please confirm the price and dates for loading/unloading.
                     'Transportation Order - %s' % purchase_order,
                     content,
                     settings.KF_SHIPPING_EMAIL_TO)
-            send_final_confirmation(installation.name, installation.pickup_date, installation.delivery_date, installation.installation_date)
+            send_all_dates_confirmation(installation)
         else:
             installation.supplier_confirmed = False
             installation.save()
@@ -291,3 +292,9 @@ Please confirm the price and dates for loading/unloading.
         return render(request, 'installations/supplier_form_redirect.html',
                 context={"confirmation": installation.supplier_confirmed,
                          "name" : settings.MANAGER })
+@login_required
+def notify_contact(request, *args, **kwargs):
+    installation_id = kwargs.get('installation_id')
+    installation=Installation.objects.get(id=installation_id)
+    send_confirmation_to_contact(installation)
+    return HttpResponse('Email has been sent to customer ;-) Now you can relax', status=202)

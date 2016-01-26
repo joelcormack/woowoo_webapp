@@ -7,3 +7,4 @@ settings_secret.py
 db.sqlite3
 devenv
 testenv
+*.pdf
