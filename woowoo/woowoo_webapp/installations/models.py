@@ -6,7 +6,7 @@ from django.db import models
 from decimal import *
 from datetime import date, timedelta
 from emails.views import send_final_confirmation
-import re
+import re, urllib
 
 class Installation(models.Model):
     """
@@ -51,6 +51,7 @@ class Installation(models.Model):
     forklift_available = models.BooleanField(default=False)
     installation_method = models.CharField(choices=INSTALLATION_METHODS, default='SI', max_length=2)
     gmaps_link = models.URLField(null=True)
+    long_and_lat = models.CharField(max_length=50, null=True)
 
     #unset on creation
     provisional_date = models.DateField(null=True)
@@ -81,14 +82,17 @@ class Installation(models.Model):
         if self.customer_confirmed:
             if self.supplier_confirmed:
                 if self.shipping_confirmed:
-                    return 4
+                    return "All dates have been confirmed and delivery is booked"
                 else:
-                    return 3
+                    return "Shipping company needs to confirm loading and unloading dates"
             else:
-                return 2
+                return "Supplier needs to confirm pickup date"
         else:
-            return 1
+            return "Contractor needs to confirm dates with customer"
 
+    def get_gmaps_url(self):
+        params = urllib.urlencode({'q': self.long_and_lat.replace(" ",""),'key': settings.GOOGLE_MAPS_KEY})
+        return "https://www.google.com/maps/embed/v1/search?%s" % params
 
 class Contact(models.Model):
     """

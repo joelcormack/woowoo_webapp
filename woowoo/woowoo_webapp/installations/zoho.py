@@ -37,6 +37,7 @@ class Zoho:
                 'Installation Method':'install_method',
                 'Google Maps Link':'gmap_link',
                 'Forklift Available':'forklift',
+                'Installation Location (51.634759, -0.179661)':'long_lat',
                 'CONTACTID':'contact_id'}
     product = { 'KL1':'KL1',
                 'KL2 prm':'KL2 prm',

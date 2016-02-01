@@ -24,6 +24,13 @@ class InstallationList(LoginRequiredMixin, ListView):
 class InstallationDetail(LoginRequiredMixin, DetailView):
     model = Installation
 
+    def get_context_data(self, **kwargs):
+        context = super(InstallationDetail, self).get_context_data(**kwargs)
+        context['status'] = context['installation'].get_status()
+        context['contact'] = context['installation'].contact_set.first()
+        context['gmap_url'] = context['installation'].get_gmaps_url()
+        return context
+
 class CreateInstallation(View):
     def get(self, request):
         zoho = Zoho()
@@ -92,7 +99,8 @@ class CreateInstallation(View):
                 postcode=pot_data.get('site_postcode', ''),
                 forklift_available=forklift,
                 installation_method=pot_data.get('install_method', ''),
-                gmaps_link=pot_data.get('gmap_link', ''))
+                gmaps_link=pot_data.get('gmap_link', ''),
+                long_and_lat=pot_data.get('long_lat', ''))
         installation.save()
         print "Added installation at site : ", installation
         return installation.id

@@ -41,3 +41,10 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .box-central {
+    max-width: 600px;
+  }
+
+}
