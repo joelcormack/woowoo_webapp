@@ -27,7 +27,19 @@
             {{ object.address_two }}<br>
             {{ object.postcode }}<br>
           </address>
+        </div>
+        <div class="col-xs-6">
           <address>
+            <strong>Contact</strong><br>
+            {{ contact }}<br>
+            {{ contact.phone }}<br>
+            <a href="mailto:{{ contact.email }}">{{ contact.email }}</a><br>
+          </address>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6">
+           <address>
             <strong>Pickup Date</strong><br>
             {{ object.pickup_date }}<br>
           </address>
@@ -37,12 +49,6 @@
           </address>
         </div>
         <div class="col-xs-6">
-          <address>
-            <strong>Contact</strong><br>
-            {{ contact }}<br>
-            {{ contact.phone }}<br>
-            {{ contact.email }}<br>
-          </address>
           <address>
             <strong>Delivery Date</strong><br>
             {{ object.delivery_date }}<br>
