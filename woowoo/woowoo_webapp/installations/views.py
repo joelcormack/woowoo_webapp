@@ -67,7 +67,7 @@ class CreateInstallation(View):
         yes_link = base_url + pk + department + "?confirm=yes"
         no_link = base_url + pk + department + "?confirm=no"
 
-        if "GGM" in installation.installation_method:
+        if "GG" in installation.installation_method:
             send_provisional_date(date=installation.provisional_date,
                     yes=yes_link,
                     no=no_link,
