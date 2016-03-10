@@ -41,7 +41,7 @@ class Installation(models.Model):
             ('SG', 'Self Install with GGM Assistance'))
 
     id = models.CharField(max_length=50, primary_key=True)
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=60)
     address_one = models.CharField(max_length=50)
     address_two = models.CharField(max_length=50, null=True)
     city = models.CharField(max_length=50, null=True)
@@ -99,9 +99,9 @@ class Contact(models.Model):
     Models a contact of the site with a name, email and phone numbers
     """
     id = models.CharField(max_length=50, primary_key=True)
-    name = models.CharField(max_length=30)
-    email = models.EmailField(max_length=30)
-    phone = models.CharField(max_length=20)
+    name = models.CharField(max_length=50)
+    email = models.EmailField(max_length=60)
+    phone = models.CharField(max_length=40)
     #foreign key
     installation = models.ForeignKey(Installation, on_delete=models.CASCADE)
 

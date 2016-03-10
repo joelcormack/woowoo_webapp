@@ -5,6 +5,5 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 
 class HomeView(View):
-    html = "<html><body><h1>Woo Woo Web App</h1><p>Go to installations</p></body></html>" 
     def get(self, request):
-        return HttpResponse(self.html)
+        return render(request, 'installations/home.html')
