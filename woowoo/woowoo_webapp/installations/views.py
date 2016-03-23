@@ -10,16 +10,14 @@ from .models import Installation, Contact, Product
 from .forms import ContractorForm
 from .kashflow import KashFlow
 from .zoho import Zoho
-from emails.views import send_provisional_date, \
-send_installation_and_delivery_form, send_confirmation_email, \
-send_supplier_pickup_date, send_installation_exists_notifier, \
-send_all_dates_confirmation, send_manager_notification_email, \
-send_confirmation_to_contact
-
+from emails.views import send_confirmation_to_contact
+import datetime
 from datetime import date, timedelta
 
 class InstallationList(LoginRequiredMixin, ListView):
-    model = Installation
+	"""list all installations that have not yet happened"""
+	context_object_name = 'installation'
+	queryset = Installation.objects.filter(installation_date__gte=datetime.date.today())
 
 class InstallationDetail(LoginRequiredMixin, DetailView):
     model = Installation
@@ -55,30 +53,19 @@ class CreateInstallation(View):
         else:
             print "Installation with that potential ID has already been added"
             match = matches.first()
-            send_installation_exists_notifier(recipient=settings.MANAGER, installation=match, pid=potential_id)
+            installation.send_installation_exists_notifier()
             return HttpResponse('Installation already exisits with that ID', status=202)
 
         pk = potential_data['potential_id']
         installation = Installation.objects.get(pk=pk)
 
-        """email links for contractor"""
-        base_url = settings.SITE_URL + 'installations/'
-        department = "/contractor/"
-        yes_link = base_url + pk + department + "?confirm=yes"
-        no_link = base_url + pk + department + "?confirm=no"
-
         if "GG" in installation.installation_method:
-            send_provisional_date(date=installation.provisional_date,
-                    yes=yes_link,
-                    no=no_link,
+            installation.send_provisional_date_notification(
                     recipient=settings.CONTRACTOR,
                     email_to=settings.CONTRACTOR_EMAIL)
         else:
-            send_provisional_date(date=installation.provisional_date,
-                    yes=yes_link,
-                    no=no_link,
-                    recipient=settings.MANAGER,
-                    email_to=settings.MANAGER_EMAIL)
+            installation.send_provisional_date_notification()
+
         return HttpResponse("Installation successfully added")
 
 
@@ -130,26 +117,17 @@ class ContractorConfirmation(LoginRequiredMixin, View):
         installation_id = self.kwargs.get('installation_id')
         installation = Installation.objects.get(id=installation_id)
         answer = request.GET.get('confirm')
-        base_url = settings.SITE_URL + 'installations/'
-        department = "/contractor/"
-        dates_form_link = base_url + installation_id + department + 'form/'
 
         if answer == 'yes':
             installation.contractor_confirmed = True
         else:
             installation.contractor_confirmed = False
-        send_installation_and_delivery_form(
-                answer=answer,
-                date=installation.provisional_date,
-                site_name=installation.name,
-                name=installation.contact_set.first().name,
-                number=installation.contact_set.first().phone,
-                email=installation.contact_set.first().email,
-                form=dates_form_link)
+
+        installation.send_date_form_notification(answer=answer)
 
         return render(request, 'installations/contractor_confirmation.html',
                     context={"name": settings.MANAGER,
-                             "form" : dates_form_link,
+                             "form" : installation.link('/contractor/', 'form/'),
                              "confirmation" : installation.contractor_confirmed})
 
 
@@ -171,10 +149,7 @@ def set_dates(request, *args, **kwargs):
             installation.customer_confirmed = True
             installation.save()
             installation.set_pickup()
-            send_confirmation_email(
-                site_name=installation.name,
-                delivery_date=delivery_date,
-                installation_date=installation_date)
+            installation.send_confirmation_notification()
 
             kf = KashFlow(
                     recipient=settings.KF_SUPPLIER_NAME,
@@ -215,16 +190,7 @@ WooWoo
                     'Email Purchases %s' % purchase_order,
                     content,
                     settings.KF_SUPPLIER_EMAIL)
-            base_url = settings.SITE_URL + 'installations/'
-            department = "/supplier/"
-            pk = installation.id
-            yes_link = base_url + pk + department + "?confirm=yes"
-            no_link = base_url + pk + department + "?confirm=no"
-            send_supplier_pickup_date(
-                    site_name=installation.name,
-                    pickup_date=installation.pickup_date.strftime('%d/%m/%Y'),
-                    yes_link=yes_link,
-                    no_link=no_link)
+            installation.send_supplier_pickup_date_notification()
             return HttpResponseRedirect(reverse('installation-detail', kwargs={'pk': installation_id}))
     else:
         form = ContractorForm()
@@ -291,11 +257,11 @@ Please confirm the price and dates for loading/unloading.
                     'Transportation Order - %s' % purchase_order,
                     content,
                     settings.KF_SHIPPING_EMAIL_TO)
-            send_all_dates_confirmation(installation)
+            installation.send_all_dates_notification()
         else:
             installation.supplier_confirmed = False
             installation.save()
-            send_manager_notification_email(installation.name, installation.pickup_date)
+            installaion.send_manager_notification()
 
         return render(request, 'installations/supplier_form_redirect.html',
                 context={"confirmation": installation.supplier_confirmed,
@@ -304,5 +270,5 @@ Please confirm the price and dates for loading/unloading.
 def notify_contact(request, *args, **kwargs):
     installation_id = kwargs.get('installation_id')
     installation=Installation.objects.get(id=installation_id)
-    send_confirmation_to_contact(installation)
+    installation.send_confirmation_to_contact()
     return HttpResponse('Email has been sent to customer ;-) Now you can relax', status=202)

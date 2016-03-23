@@ -3,10 +3,16 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db import models
+from django.conf import settings
 from decimal import *
-from datetime import date, timedelta
-from emails.views import send_final_confirmation
 import re, urllib
+from datetime import date, timedelta
+
+from emails.views import send_provisional_date, \
+send_installation_and_delivery_form, send_confirmation_email, \
+send_supplier_pickup_date, send_installation_exists_notifier, \
+send_all_dates_confirmation, send_manager_notification_email, \
+send_confirmation_to_contact, send_final_confirmation
 
 class Installation(models.Model):
     """
@@ -91,8 +97,69 @@ class Installation(models.Model):
             return "Contractor needs to confirm dates with customer"
 
     def get_gmaps_url(self):
-        params = urllib.urlencode({'q': self.long_and_lat.replace(" ",""),'key': settings.GOOGLE_MAPS_KEY})
-        return "https://www.google.com/maps/embed/v1/search?%s" % params
+		try:
+			params = urllib.urlencode({'q': self.long_and_lat.replace(" ",""),'key': settings.GOOGLE_MAPS_KEY})
+			gmap_url = "https://www.google.com/maps/embed/v1/search?%s" % params
+		except AttributeError:
+			print "No Longitude and Latitude provided, using postcode for embedded Google map"""
+			params = urllib.urlencode({'q': self.postcode.replace(" ",""),'key': settings.GOOGLE_MAPS_KEY})
+		return "https://www.google.com/maps/embed/v1/search?%s"	% params
+
+    base_url = settings.SITE_URL + 'installations/'
+
+    def link(self, department, tail):
+        return self.base_url + self.id + department + tail
+
+    def send_provisional_date_notification(self,
+        recipient=settings.MANAGER,
+        email_to=settings.MANAGER_EMAIL):
+
+        send_provisional_date(
+                    date=self.provisional_date,
+                    yes=self.link('/contractor/', '?confirm=yes'),
+                    no=self.link('/contractor/', '?confirm=no'),
+                    recipient=recipient,
+                    email_to=email_to)
+
+    def send_date_form_notification(self, answer):
+        send_installation_and_delivery_form(
+                answer=answer,
+                date=self.provisional_date,
+                site_name=self.name,
+                name=self.contact_set.first().name,
+                number=self.contact_set.first().phone,
+                email=self.contact_set.first().email,
+                form=self.link('/contractor/', 'form/'))
+
+    def send_confirmation_notification(self):
+        send_confirmation_email(
+            site_name=self.name,
+            delivery_date=self.delivery_date,
+            installation_date=self.installation_date)
+
+    def send_supplier_pickup_date_notification(self):
+        send_supplier_pickup_date(
+            site_name=self.name,
+            pickup_date=self.pickup_date.strftime('%d/%m/%Y'),
+            yes_link=self.link('/supplier/', '?confirm=yes'),
+            no_link=self.link('/supplier/', '?confirm=no'))
+
+    def send_installation_exists_notifier(self):
+        send_installation_exists_notifier(
+                recipient=settings.MANAGER,
+                installation=self.name,
+                pid=self.id)
+
+    def send_all_dates_notification(self):
+        send_all_dates_confirmation(self)
+
+    def send_manager_notification(self):
+        send_manager_notification_email(
+                installation.name,
+                installation.pickup_date)
+
+    def send_confirmation_to_contact(self):
+        send_confirmation_to_contact(self)
 
 class Contact(models.Model):
     """
