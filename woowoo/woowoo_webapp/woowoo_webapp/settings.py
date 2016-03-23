@@ -27,7 +27,7 @@ SECRET_KEY = ENVIRONMENT_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [u'joelcormack.pythonanywhere.com']
+ALLOWED_HOSTS = [u'app.waterlesstoilets.co.uk']
 
 #KASHFLOW TEST
 KF_TEST_RECIPIENT_ID = "4580634"
