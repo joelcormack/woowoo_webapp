@@ -31,15 +31,18 @@ body {
 .form-signin .form-control:focus {
   z-index: 2;
 }
-.form-signin input[type="email"] {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
+.form-django input {
+  width: 100%;
+  padding: 6px;
+  border-radius: 6px;
+  border-style: solid;
+  border-color: darkgrey;
+  display: block;
 }
-.form-signin input[type="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+/* Change the white to any color ;) */
+.form-django input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+    -webkit-text-fill-color: grey !important;
 }
 /* Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {

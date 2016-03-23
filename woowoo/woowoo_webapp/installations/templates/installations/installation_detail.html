@@ -1,6 +1,15 @@
 {% extends 'installations/base.html' %}
 {% block content %}
-<div class="box-central">
+  <a href="{% url 'installation-list' %}">
+    <button class="btn btn-default">
+      <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> <strong>Back to list</strong>
+    </button>
+  </a>
+  <a href="{% url 'contractor-dates' object.id  %}">
+    <button class="btn btn-warning pull-right">
+      <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> <strong>Edit Dates</strong>
+    </button>
+  </a>
 
   <p></p>
   <div class="panel panel-primary">
@@ -20,7 +29,7 @@
       </div>
 
       <div class="row">
-        <div class="col-xs-6">
+        <div class="col-sm-6">
           <address>
             <strong>Site Address</strong><br>
             {{ object.address_one }}<br>
@@ -28,7 +37,7 @@
             {{ object.postcode }}<br>
           </address>
         </div>
-        <div class="col-xs-6">
+        <div class="col-sm-6">
           <address>
             <strong>Contact</strong><br>
             {{ contact }}<br>
@@ -38,7 +47,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-6">
+        <div class="col-sm-6">
            <address>
             <strong>Pickup Date</strong><br>
             {{ object.pickup_date }}<br>
@@ -48,7 +57,7 @@
             {{ object.installation_date }}<br>
           </address>
         </div>
-        <div class="col-xs-6">
+        <div class="col-sm-6">
           <address>
             <strong>Delivery Date</strong><br>
             {{ object.delivery_date }}<br>
@@ -63,21 +72,4 @@
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-xs-6">
-      <a href="{% url 'installation-list' %}">
-        <button type="button" class="btn btn-primary btn-block" aria-label="Left Align">
-          <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> <strong>Installations</strong>
-        </button>
-      </a>
-    </div>
-    <div class="col-xs-6">
-      <a href="{% url 'contractor-dates' object.id  %}">
-        <button type="button" class="btn btn-danger btn-block" aria-label="Left Align">
-          <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> <strong>Edit Dates</strong>
-        </button>
-      </a>
-    </div>
-  </div>
-</div>
 {% endblock %}

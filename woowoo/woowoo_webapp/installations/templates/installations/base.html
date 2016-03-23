@@ -24,12 +24,12 @@
   </head>
   <body>
     <div class="container">
-     <div>
-      {{ user }}
+     <div class="loginout">
       {% if user.is_anonymous %}
-      <a href="{% url 'django.contrib.auth.views.login' %}">login</a>
+      <a class="btn btn-default" href="{% url 'django.contrib.auth.views.login' %}">Login</a>
       {% else %}
-      <a href="{% url 'django.contrib.auth.views.logout' %}">logout</a>
+      <a class="btn btn-link pull-right" href="{% url 'django.contrib.auth.views.logout' %}">Logout</a>
+      <h3><span class="label label-success">{{ user|capfirst }}</span></h3>
       {% endif %}
     </div>
       <h1>{% block title %}{% endblock %}</h1>
