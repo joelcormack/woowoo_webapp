@@ -7,7 +7,26 @@ class Zoho:
     def __init__(self, authtoken=settings.ZOHO_AUTHTOKEN):
         self.authtoken = authtoken
 
-    def get_record_data(self, module_name, record_id):
+    def get_potential_by_search(self, search_value):
+        params = {'authtoken': self.authtoken,
+                'scope':'crmapi',
+                'selectColumns': 'Potentials(Potential Name,)',
+                'searchColumn': 'potentialname',
+                'searchValue': search_value}
+        final_URL = "https://crm.zoho.com/crm/private/json/Potentials/getSearchRecordsByPDC"
+        data = urllib.urlencode(params)
+        request = urllib2.Request(final_URL,data)
+        response = urllib2.urlopen(request)
+        json_response = response.read()
+        data = json.loads(json_response)
+        try:
+            data = data['response']['result']['Potentials']['row']['FL']
+            return data
+        except ValueError, Argument:
+            print "Incorrect json response structure from zoho API", Argument
+
+
+    def get_record(self, module_name, record_id):
         """
         retrieves potential data in json format
         from zoho api and returns a python dictionary
@@ -51,41 +70,13 @@ class Zoho:
                 'Phone (main)' : 'phone',
                 'Email': 'email'}
 
-    def extract_potential_data(self, potential_json):
-        """extract the potential data we need for our models"""
-        p_data = {}
-        for set in potential_json:
+    def extract(self, data):
+        """extract key and value pairs"""
+        extracted_data = {}
+        for set in data:
             value = set['val']
             content = set['content']
-            for pot, ins in self.potential_to_installation.iteritems():
+            for item, ins in self.data.iteritems():
                 if value == pot:
-                    p_data[ins] = content
-
-        return p_data
-
-    def extract_product_data(self, product):
-        """extract the product data"""
-        products = {}
-        for set in product:
-            value = set['val']
-            content = set['content']
-            for pot, ins in self.product.iteritems():
-                if value == pot:
-                    products[ins] = content
-
-        return products
-
-    def extract_contact_data(self, contact_json):
-        """
-        extract the potential data we need for our models
-        """
-        c_data = {}
-        for set in contact_json:
-            value = set['val']
-            content = set['content']
-            for contact_zoho, contact in self.contact_zoho_to_contact.iteritems():
-                if value == contact_zoho:
-                    c_data[contact] = content
-
-        return c_data
-
+                    extracted_data[ins] = content
+        return extracted_data

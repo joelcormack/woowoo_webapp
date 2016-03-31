@@ -34,15 +34,15 @@ class CreateInstallation(View):
         zoho = Zoho()
         """retrieve and extract potential data"""
         potential_id = request.GET.get('pid')
-        potential = zoho.get_record_data("Potentials", potential_id)
-        potential_data = zoho.extract_potential_data(potential)
+        potential = zoho.get_record("Potentials", potential_id)
+        potential_data = zoho.extract(potential)
 
         """retrieve and extract contact data"""
-        contact = zoho.get_record_data("Contacts", potential_data.get('contact_id'))
-        contact_data = zoho.extract_contact_data(contact)
+        contact = zoho.get_record("Contacts", potential_data.get('contact_id'))
+        contact_data = zoho.extract(contact)
 
         """extract product data"""
-        products = zoho.extract_product_data(potential)
+        products = zoho.extract(potential)
 
         """create instances with data"""
         matches = Installation.objects.filter(pk=potential_data['potential_id'])

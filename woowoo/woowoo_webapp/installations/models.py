@@ -78,6 +78,8 @@ class Installation(models.Model):
         self.set_provisional()
         super(Installation, self).save(*args, **kwargs) #call original save method
 
+    def update(self)
+
     def get_status(self):
         """
         1 = customer and contractor need to confirm
@@ -246,7 +248,9 @@ def match_dates(message,dates):
                         installation,
                         installation.shipping_confirmed,
                         installation.shipping_receipt)
-                send_final_confirmation(installation)
+                send_final_confirmation(installation, settings.MANAGER, settings.MANAGER_EMAIL)
+                send_final_confirmation(installation, settings.CONTRACTOR, settings.CONTRACTOR_EMAIL)
+                send_final_confirmation(installation, settings.MANAGER, settings.ACCOUNTS_EMAIL)
 
 
 def file_is_pdf(filename):

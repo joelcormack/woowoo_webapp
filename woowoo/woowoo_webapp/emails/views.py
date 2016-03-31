@@ -31,7 +31,7 @@ def send_provisional_date(date, yes, no, recipient, email_to):
 def send_installation_and_delivery_form(answer, date, site_name, name, number, email, form):
     if answer == 'yes':
         msg_html = render_to_string('emails/installation_and_delivery_form_notifier.html', {
-            'recipient': 'Jake',
+            'recipient': settings.CONTRACTOR,
             'date': date,
             'customer_name': name,
             'site_name': site_name,
@@ -40,7 +40,7 @@ def send_installation_and_delivery_form(answer, date, site_name, name, number, e
             'form': form})
     else:
         msg_html = render_to_string('emails/installation_and_delivery_form_notifier_answer_no.html', {
-            'recipient': 'Jake',
+            'recipient': settings.CONTRACTOR,
             'date': date,
             'customer_name': name,
             'number':number,
@@ -108,26 +108,26 @@ def send_manager_notification_email(site_name, pickup_date):
                 fail_silently=False,
                 html_message=msg_html)
 
-def send_final_confirmation(installation):
+def send_final_confirmation(installation, recipient, email):
     contact_name = installation.contact_set.first().name
     domain = settings.SITE_URL[0:-1]
     msg_html = render_to_string('emails/installation_final_notifier.html', {
         'contact_name':contact_name,
         'domain':domain,
-        'recipient': settings.MANAGER,
+        'recipient': recipient,,
         'installation':installation})
 
     send_mail('Final confirmation',
                 'plain_text',
                 settings.APPLICATION_EMAIL,
-                [settings.MANAGER_EMAIL, settings.CONTRACTOR_EMAIL],
+                [email],
                 fail_silently=False,
                 html_message=msg_html)
 
 def send_confirmation_to_contact(installation):
     contact = installation.contact_set.first()
     msg_html = render_to_string('emails/installation_final_customer_notifier.html', {
-        'recipient': settings.MANAGER,
+        'recipient': contact.name,
         'installation':installation,
         'contact_name':contact.name})
 
@@ -137,6 +137,4 @@ def send_confirmation_to_contact(installation):
                 [settings.MANAGER_EMAIL, contact.email],
                 fail_silently=False,
                 html_message=msg_html)
-
-
 
