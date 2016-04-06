@@ -110,16 +110,8 @@ class Installation(models.Model):
     def link(self, department, tail):
         return self.base_url + self.id + department + tail
 
-    def send_provisional_date_notification(self,
-        recipient=settings.MANAGER,
-        email_to=settings.MANAGER_EMAIL):
-
-        send_provisional_date(
-                    date=self.provisional_date,
-                    yes=self.link('/contractor/', '?confirm=yes'),
-                    no=self.link('/contractor/', '?confirm=no'),
-                    recipient=recipient,
-                    email_to=email_to)
+    def send_provisional_date_notification(self):
+        send_provisional_date(installation=self)
 
     def send_date_form_notification(self, answer):
         send_installation_and_delivery_form(

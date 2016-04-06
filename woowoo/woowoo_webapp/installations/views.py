@@ -26,6 +26,7 @@ class InstallationDetail(LoginRequiredMixin, DetailView):
         context = super(InstallationDetail, self).get_context_data(**kwargs)
         context['status'] = context['installation'].get_status()
         context['contact'] = context['installation'].contact_set.first()
+        context['products'] = context['installation'].product_set.all()
         context['gmap_url'] = context['installation'].get_gmaps_url()
         return context
 

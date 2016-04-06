@@ -3,7 +3,44 @@
 
 <h2>Hi {{ recipient }}</h2>
 
-<p>We've received an order. The provisional week for delivery is {{ date }} (6 weeks from now).</p>
+<p>We've received an order and need to arrange installation and delivery dates.</p>
+<address><strong>Site Name: </strong><br>
+  {{ installation.name}}
+</address>
+<br>
+
+<address><strong>Products:</strong><br>
+{% for product in products %}
+  {{ product.quantity }} x {{ product.name }}
+{% endfor %}
+</address>
+<br>
+
+<address>
+  <strong>Site Address:</strong><br>
+  <a href="{{ installation.gmaps_link }}" >
+    {{ installation.address_one }}<br>
+    {{ installation.address_two }}<br>
+    {{ installation.city }}<br>
+    {{ installation.county }}<br>
+    {{ installation.postcode }}<br>
+  </a>
+</address>
+<br>
+<address>
+  <a href="{{ installation.gmaps_link }}" class="button button--blue">Exact toilet location</a>
+</address>
+<br>
+
+<address>
+  <strong>Contact</strong><br>
+  {{ contact }}<br>
+  {{ contact.phone }}<br>
+  <a href="mailto:{{ contact.email }}">{{ contact.email }}</a><br>
+</address>
+<br>
+
+<p>The provisional week for delivery is {{ date }} (6 weeks from now).</p>
 
 <p>Please confirm this is a good week for you to install.</p>
 

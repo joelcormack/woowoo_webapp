@@ -15,14 +15,18 @@ def send_installation_exists_notifier(recipient, installation, pid):
 	html_message=msg_html)
 
 
-def send_provisional_date(date, yes, no, recipient, email_to):
+def send_provisional_date(installation, recipient=settings.CONTRACTOR, email_to=settings.CONTRACTOR_EMAIL):
     msg_html = render_to_string('emails/provisional_date_notifier.html', {
         'recipient': recipient,
-        'yes' : yes,
-        'no': no,
-        'date' : date})
-    send_mail('Please confirm this provisional date',
-        'bill',
+        'yes' : installation.link('/contractor/', '?confirm=yes'),
+        'no' : installation.link('/contractor/', '?confirm=no'),
+        'date' : installation.provisional_date,
+        'installation': installation,
+        'contact': installation.contact_set.first(),
+        'products': installation.product_set.all()})
+
+    send_mail('Provisional date for %s' % installation.name,
+        'Weve recieved an order, please confirm this date is suitable.',
         settings.APPLICATION_EMAIL,
         [email_to],
         fail_silently=False,

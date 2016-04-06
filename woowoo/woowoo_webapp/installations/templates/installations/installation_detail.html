@@ -34,6 +34,8 @@
             <strong>Site Address</strong><br>
             {{ object.address_one }}<br>
             {{ object.address_two }}<br>
+            {{ object.city }}<br>
+            {{ object.county }}<br>
             {{ object.postcode }}<br>
           </address>
         </div>
@@ -48,9 +50,9 @@
       </div>
       <div class="row">
         <div class="col-sm-6">
-           <address>
-            <strong>Pickup Date</strong><br>
-            {{ object.pickup_date }}<br>
+          <address>
+            <strong>Delivery Date</strong><br>
+            {{ object.delivery_date }}<br>
           </address>
           <address>
             <strong>Installation Date</strong><br>
@@ -58,10 +60,12 @@
           </address>
         </div>
         <div class="col-sm-6">
-          <address>
-            <strong>Delivery Date</strong><br>
-            {{ object.delivery_date }}<br>
-          </address>
+          <div>
+            <strong>Products</strong><br>
+            {% for product in products %}
+              {{ product.quantity }} x {{ product.name }}
+            {% endfor %}
+          </div>
         </div>
       </div>
       <div class="embed-responsive embed-responsive-4by3">
