@@ -131,3 +131,30 @@ STATICFILES_DIRS = (
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # django-mailbox
 DJANGO_MAILBOX_ATTACHMENT_UPLOAD_TO='mailbox_attachments/'
+
+#ZOHO VALUE MAPPINGS
+"""ZOHO CRM maped --> app variables"""
+POTENTIAL_TO_INSTALLATION = {
+            'POTENTIALID':'potential_id',
+            'Potential Name':'potential_name',
+            'Site Street':'site_address',
+            'Site Street 2':'site_address_two',
+            'Site City':'site_city',
+            'Site County':'site_county',
+            'Site Post Code':'site_postcode',
+            'Installation Method':'install_method',
+            'Google Maps Link':'gmap_link',
+            'Forklift Available':'forklift',
+            'Installation Location (51.634759, -0.179661)':'long_lat',
+            'CONTACTID':'contact_id'}
+PRODUCTS = { 'KL1':'KL1',
+            'KL2 prm':'KL2 prm',
+            'KL3':'KL3',
+            'STK':'STK',
+            'KLu':'KLu'}
+ZOHO_CONTACT_TO_CONTACT = {
+            'CONTACTID' : 'contact_id',
+            'First Name': 'first_name',
+            'Last Name': 'last_name',
+            'Phone (main)' : 'phone',
+            'Email': 'email'}
