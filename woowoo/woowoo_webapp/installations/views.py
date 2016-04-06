@@ -17,7 +17,8 @@ from datetime import date, timedelta
 class InstallationList(LoginRequiredMixin, ListView):
 	"""list all installations that have not yet happened"""
 	context_object_name = 'installation'
-	queryset = Installation.objects.filter(installation_date__gte=datetime.date.today())
+        week = timedelta(days=7)
+	queryset = Installation.objects.filter(installation_date__gte=datetime.date.today() - week)
 
 class InstallationDetail(LoginRequiredMixin, DetailView):
     model = Installation
