@@ -112,6 +112,7 @@ class Installation(models.Model):
 
     def send_provisional_date_notification(self):
         send_provisional_date(installation=self)
+        print "Sending provisional date to contractor"
 
     def send_date_form_notification(self, answer):
         send_installation_and_delivery_form(
@@ -122,12 +123,14 @@ class Installation(models.Model):
                 number=self.contact_set.first().phone,
                 email=self.contact_set.first().email,
                 form=self.link('/contractor/', 'form/'))
+        print "Sending date form email to contractor"
 
     def send_confirmation_notification(self):
         send_confirmation_email(
             site_name=self.name,
             delivery_date=self.delivery_date,
             installation_date=self.installation_date)
+        print "Sending confirmation email"
 
     def send_supplier_pickup_date_notification(self):
         send_supplier_pickup_date(
@@ -135,23 +138,28 @@ class Installation(models.Model):
             pickup_date=self.pickup_date.strftime('%d/%m/%Y'),
             yes_link=self.link('/supplier/', '?confirm=yes'),
             no_link=self.link('/supplier/', '?confirm=no'))
+        print "Sending pickup date email to supplier"
 
     def send_installation_exists_notifier(self):
         send_installation_exists_notifier(
                 recipient=settings.MANAGER,
                 installation=self.name,
                 pid=self.id)
+        print "Sending installation exists email"
 
     def send_all_dates_notification(self):
         send_all_dates_confirmation(self)
+        print "Sending confirmation of all dates"
 
     def send_manager_notification(self):
         send_manager_notification_email(
                 installation.name,
                 installation.pickup_date)
+        print "Sending email to manager"
 
     def send_confirmation_to_contact(self):
         send_confirmation_to_contact(self)
+        print "Sending confirmation email to contact"
 
 class Contact(models.Model):
     """
