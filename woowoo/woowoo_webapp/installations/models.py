@@ -14,6 +14,32 @@ send_supplier_pickup_date, send_installation_exists_notifier, \
 send_all_dates_confirmation, send_manager_notification_email, \
 send_confirmation_to_contact, send_final_confirmation
 
+class InstallationManager(models.Manager):
+    def create_installation(self, data):
+        forklift = data.get('forklift', '')
+        if forklift == 'true':
+            forklift = True
+        else:
+            forklift = False
+
+        installation = self.create(
+                id=data.get('potential_id', ''),
+                name=data.get('potential_name', ''),
+                address_one=data.get('site_address', ''),
+                address_two=data.get('site_address_two', ''),
+                city=data.get('site_city', ''),
+                county=data.get('site_county', ''),
+                postcode=data.get('site_postcode', ''),
+                forklift_available=forklift,
+                installation_method=data.get('install_method', ''),
+                gmaps_link=data.get('gmap_link', ''),
+                long_and_lat=data.get('long_lat', ''))
+        installation.save()
+        print "Added installation called: ", installation
+        return installation
+
+
+
 class Installation(models.Model):
     """
     Models an installation with a date set on creation, installation date,
@@ -55,7 +81,7 @@ class Installation(models.Model):
     postcode = models.CharField(max_length=10)
     created_date = models.DateField(auto_now_add=True)
     forklift_available = models.BooleanField(default=False)
-    installation_method = models.CharField(choices=INSTALLATION_METHODS, default='SI', max_length=2)
+    installation_method = models.CharField(choices=INSTALLATION_METHODS, default='SI', max_length=50)
     gmaps_link = models.URLField(null=True)
     long_and_lat = models.CharField(max_length=50, null=True)
 
@@ -69,6 +95,7 @@ class Installation(models.Model):
     shipping_receipt = models.FileField(upload_to='shipping_receipts/%Y/%m/%d', null=True)
     customer_confirmed = models.BooleanField(default=False)
     supplier_confirmed = models.BooleanField(default=False)
+    objects = InstallationManager()
 
     def __unicode__(self):
         return self.name
@@ -161,6 +188,21 @@ class Installation(models.Model):
         send_confirmation_to_contact(self)
         print "Sending confirmation email to contact"
 
+
+class ContactManager(models.Manager):
+
+    def create_contact(self, data, installation):
+        contact = self.create(
+            id=data.get('contact_id',''),
+            name=data.get('first_name', '')+" "+data.get('last_name', ''),
+            phone=data.get('phone',''),
+            email=data.get('email',''),
+            installation=installation)
+        contact.save()
+        print "Added contact : ", contact
+        return contact
+
+
 class Contact(models.Model):
     """
     Models a contact of the site with a name, email and phone numbers
@@ -171,9 +213,23 @@ class Contact(models.Model):
     phone = models.CharField(max_length=40)
     #foreign key
     installation = models.ForeignKey(Installation, on_delete=models.CASCADE)
+    objects = ContactManager()
 
     def __unicode__(self):
         return self.name
+
+class ProductManager(models.Manager):
+    def create_product(self, data, inst_pk):
+        for item in data.items():
+            if int(item[1]) > 0:
+                product = Product.objects,create_product(
+                    name=item[0],
+                    quantity=item[1],
+                    installation=installation)
+                product.save()
+                print "Added product : ", product
+                return product
+
 
 class Product(models.Model):
     """
@@ -202,6 +258,7 @@ class Product(models.Model):
     rate = models.DecimalField(null=True, decimal_places=2, max_digits=7)
     #foreign key
     installation = models.ForeignKey(Installation, on_delete=models.CASCADE)
+    objects = ProductManager()
 
     def __unicode__(self):
         return self.name

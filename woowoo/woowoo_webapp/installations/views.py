@@ -49,9 +49,9 @@ class CreateInstallation(View):
         pk = potential_data['potential_id']
         matches = Installation.objects.filter(pk=pk)
         if matches.count() < 1:
-            installation_pk = self.add_installation(potential_data)
-            self.add_contact(contact_data, installation_pk)
-            self.add_product(products, installation_pk)
+            installation = Installation.objects.create_installation(potential_data)
+            contact = Contact.objects.create_contact(contact_data, installation)
+            product = Product.objects.create_product(products, installation)
         else:
             print "Installation with that potential ID has already been added"
             match = matches.first()
@@ -68,50 +68,6 @@ class CreateInstallation(View):
             installation.send_provisional_date_notification()
 
         return HttpResponse("Installation successfully added")
-
-
-    def add_installation(self, pot_data):
-        forklift = pot_data.get('forklift', '')
-        if forklift == 'true':
-            forklift = True
-        else:
-            forklift = False
-
-        installation = Installation(
-                id=pot_data.get('potential_id', ''),
-                name=pot_data.get('potential_name', ''),
-                address_one=pot_data.get('site_address', ''),
-                address_two=pot_data.get('site_address_two', ''),
-                city=pot_data.get('site_city', ''),
-                county=pot_data.get('site_county', ''),
-                postcode=pot_data.get('site_postcode', ''),
-                forklift_available=forklift,
-                installation_method=pot_data.get('install_method', ''),
-                gmaps_link=pot_data.get('gmap_link', ''),
-                long_and_lat=pot_data.get('long_lat', ''))
-        installation.save()
-        print "Added installation at site : ", installation
-        return installation.id
-
-    def add_contact(self, data, inst_pk):
-        contact = Contact(
-                id=data.get('contact_id',''),
-                name=data.get('first_name', '')+" "+data.get('last_name', ''),
-                phone=data.get('phone',''),
-                email=data.get('email',''),
-                installation=Installation.objects.get(id=inst_pk))
-        contact.save()
-        print "Added contact : ", contact
-
-    def add_product(self, data, inst_pk):
-        for item in data.items():
-            if int(item[1]) > 0:
-                product = Product(
-                    name=item[0],
-                    quantity=item[1],
-                    installation=Installation.objects.get(id=inst_pk))
-                product.save()
-                print "Added product : ", product
 
 class ContractorConfirmation(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
