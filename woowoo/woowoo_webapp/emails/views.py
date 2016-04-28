@@ -60,7 +60,7 @@ def send_installation_and_delivery_form(answer, date, site_name, name, number, e
 
 def send_confirmation_email(site_name, delivery_date, installation_date):
     msg_html = render_to_string('emails/customer_and_contractor_confirmation_notifier.html', {
-        'recipient': settings.MANAGER,
+        'recipient': settings.CONTRACTOR,
         'site_name': site_name,
         'delivery_date': delivery_date,
         'installation_date': installation_date})
@@ -89,7 +89,7 @@ def send_supplier_pickup_date(site_name, pickup_date, yes_link, no_link):
 
 def send_all_dates_confirmation(installation):
     msg_html = render_to_string('emails/installation_all_dates_notifier.html', {
-        'recipient': settings.MANAGER,
+        'recipient': settings.CONTRACTOR,
         'installation': installation})
 
     send_mail('Installation dates confirmation',
@@ -118,7 +118,7 @@ def send_final_confirmation(installation):
     msg_html = render_to_string('emails/installation_final_notifier.html', {
         'contact_name':contact_name,
         'domain':domain,
-        'recipient': settings.MANAGER,
+        'recipient': settings.CONTRACTOR,
         'installation':installation})
 
     send_mail('Final confirmation',
@@ -131,7 +131,7 @@ def send_final_confirmation(installation):
 def send_confirmation_to_contact(installation):
     contact = installation.contact_set.first()
     msg_html = render_to_string('emails/installation_final_customer_notifier.html', {
-        'recipient': settings.MANAGER,
+        'recipient': contact.name,
         'installation':installation,
         'contact_name':contact.name})
 
