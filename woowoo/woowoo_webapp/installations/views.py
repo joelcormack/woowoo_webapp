@@ -59,13 +59,7 @@ class CreateInstallation(View):
             return HttpResponse('Installation already exisits with that ID', status=202)
 
         installation = Installation.objects.get(pk=pk)
-
-        if "GG" in installation.installation_method:
-            installation.send_provisional_date_notification(
-                    recipient=settings.CONTRACTOR,
-                    email_to=settings.CONTRACTOR_EMAIL)
-        else:
-            installation.send_provisional_date_notification()
+        installation.send_provisional_date_notification()
 
         return HttpResponse("Installation successfully added")
 

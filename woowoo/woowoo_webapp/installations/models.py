@@ -66,11 +66,15 @@ class Installation(models.Model):
             return day + timedelta(days_ahead)
         self.provisional_date = next_weekday(self.created_date + timedelta(days=42), 0)
 
+    SELF_INSTALL = 'SI'
+    CONTRACTOR_INSTALL = 'CI'
+    GGM_INSTALL = 'GG'
+    SELF_AND_GGM = 'SG'
     INSTALLATION_METHODS = (
-            ('SI', 'Self Install'),
-            ('CI', 'Contractor Install'),
-            ('GG', 'GGM Install'),
-            ('SG', 'Self Install with GGM Assistance'))
+            (SELF_INSTALL, 'Self Install'),
+            (CONTRACTOR_INSTALL, 'Contractor Install'),
+            (GGM_INSTALL, 'GGM Install'),
+            (SELF_AND_GGM, 'Self Install with GGM Assistance'))
 
     id = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=60)
@@ -81,7 +85,7 @@ class Installation(models.Model):
     postcode = models.CharField(max_length=10)
     created_date = models.DateField(auto_now_add=True)
     forklift_available = models.BooleanField(default=False)
-    installation_method = models.CharField(choices=INSTALLATION_METHODS, default='SI', max_length=50)
+    installation_method = models.CharField(choices=INSTALLATION_METHODS, default=SELF_INSTALL, max_length=2)
     gmaps_link = models.URLField(null=True)
     long_and_lat = models.CharField(max_length=50, null=True)
 
@@ -138,8 +142,11 @@ class Installation(models.Model):
         return self.base_url + self.id + department + tail
 
     def send_provisional_date_notification(self):
-        send_provisional_date(installation=self)
-        print "Sending provisional date to contractor"
+        if not self.GGM_INSTALL:
+            send_provisional_date(installation=self, recipient=MANAGER, email_to=MANAGER_EMAIL)
+        else:
+            send_provisional_date(installation=self)
+        print "Sending provisional date to contractor or manager"
 
     def send_date_form_notification(self, answer):
         send_installation_and_delivery_form(
