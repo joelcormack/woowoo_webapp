@@ -20,7 +20,7 @@ def send_provisional_date(installation, recipient=settings.CONTRACTOR, email_to=
         'recipient': recipient,
         'yes' : installation.link('/contractor/', '?confirm=yes'),
         'no' : installation.link('/contractor/', '?confirm=no'),
-        'date' : installation.provisional_date,
+        'date' : installation.get_provisional_date,
         'installation': installation,
         'contact': installation.contact_set.first(),
         'products': installation.product_set.all()})

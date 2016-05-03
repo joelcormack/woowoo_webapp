@@ -48,20 +48,22 @@ class CreateInstallation(View):
         """create instances with data"""
         pk = potential_data['potential_id']
         matches = Installation.objects.filter(pk=pk)
-        if matches.count() < 1:
-            installation = Installation.objects.create_installation(potential_data)
-            contact = Contact.objects.create_contact(contact_data, installation)
-            product = Product.objects.create_product(products, installation)
-        else:
+        if matches:
             print "Installation with that potential ID has already been added"
             match = matches.first()
             match.send_installation_exists_notifier()
             return HttpResponse('Installation already exisits with that ID', status=202)
-
-        installation = Installation.objects.get(pk=pk)
-        installation.send_provisional_date_notification()
-
-        return HttpResponse("Installation successfully added")
+        else:
+            installation = Installation.objects.create_installation(potential_data)
+            contact = Contact.objects.create_contact(contact_data, installation)
+            product = Product.objects.create_product(products, installation)
+            #save em
+            installation.save()
+            contact.save()
+            product.save()
+            installation = Installation.objects.get(pk=pk)
+            installation.send_provisional_date_notification()
+            return HttpResponse("Installation successfully added")
 
 class ContractorConfirmation(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -108,7 +110,7 @@ def set_dates(request, *args, **kwargs):
             purchase_order = kf.create_purchase_order(installation.name)
             for product in installation.product_set.all():
                 if product.quantity > 0:
-                    kf.add_item(purchase_order, product.quantity, settings.SALES_CODE, product.name, product.rate)
+                    kf.add_item(purchase_order, product.quantity, settings.SALES_CODE, product.name, product.get_rate)
             kf.add_note(purchase_order,
                     'Delivery Address:\n%s, \n%s, \n%s, \n%s, \n%s, \n%s' % (installation.name,
                                                                  installation.address_one,

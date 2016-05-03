@@ -21,7 +21,6 @@ class InstallationManager(models.Manager):
             forklift = True
         else:
             forklift = False
-
         installation = self.create(
                 id=data.get('potential_id', ''),
                 name=data.get('potential_name', ''),
@@ -34,11 +33,8 @@ class InstallationManager(models.Manager):
                 installation_method=data.get('install_method', ''),
                 gmaps_link=data.get('gmap_link', ''),
                 long_and_lat=data.get('long_lat', ''))
-        installation.save()
-        print "Added installation called: ", installation
+        print "Added Installation: ", installation.name
         return installation
-
-
 
 class Installation(models.Model):
     """
@@ -57,14 +53,14 @@ class Installation(models.Model):
         self.save()
         print self.pickup_date
 
-    def set_provisional(self):
+    def get_provisional_date(self):
         """calculate provisional date"""
         def next_weekday(day, weekday):
             days_ahead = weekday - day.weekday()
             if days_ahead <= 0: # Target day already happened this week
                 days_ahead += 7
             return day + timedelta(days_ahead)
-        self.provisional_date = next_weekday(self.created_date + timedelta(days=42), 0)
+        return next_weekday(self.created_date + timedelta(days=42), 0)
 
     SELF_INSTALL = 'SI'
     CONTRACTOR_INSTALL = 'CI'
@@ -90,7 +86,6 @@ class Installation(models.Model):
     long_and_lat = models.CharField(max_length=50, null=True)
 
     #unset on creation
-    provisional_date = models.DateField(null=True)
     installation_date = models.DateField(null=True)
     delivery_date = models.DateField(null=True)
     pickup_date = models.DateField(null=True)
@@ -103,11 +98,6 @@ class Installation(models.Model):
 
     def __unicode__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        super(Installation, self).save(*args, **kwargs) #call original save method
-        self.set_provisional()
-        super(Installation, self).save(*args, **kwargs) #call original save method
 
     def get_status(self):
         """
@@ -142,8 +132,8 @@ class Installation(models.Model):
         return self.base_url + self.id + department + tail
 
     def send_provisional_date_notification(self):
-        if not self.GGM_INSTALL:
-            send_provisional_date(installation=self, recipient=MANAGER, email_to=MANAGER_EMAIL)
+        if not self.GGM_INSTALL == self.installation_method:
+            send_provisional_date(installation=self, recipient=settings.MANAGER, email_to=settings.MANAGER_EMAIL)
         else:
             send_provisional_date(installation=self)
         print "Sending provisional date to contractor or manager"
@@ -151,7 +141,7 @@ class Installation(models.Model):
     def send_date_form_notification(self, answer):
         send_installation_and_delivery_form(
                 answer=answer,
-                date=self.provisional_date,
+                date=self.get_provisional_date(),
                 site_name=self.name,
                 name=self.contact_set.first().name,
                 number=self.contact_set.first().phone,
@@ -205,8 +195,7 @@ class ContactManager(models.Manager):
             phone=data.get('phone',''),
             email=data.get('email',''),
             installation=installation)
-        contact.save()
-        print "Added contact : ", contact
+        print "added  %s to %s" % (contact.name, installation)
         return contact
 
 
@@ -226,23 +215,21 @@ class Contact(models.Model):
         return self.name
 
 class ProductManager(models.Manager):
-    def create_product(self, data, inst_pk):
-        for item in data.items():
+    def create_product(self, products, installation):
+        for item in products.items():
             if int(item[1]) > 0:
-                product = Product.objects,create_product(
+                product = self.create(
                     name=item[0],
                     quantity=item[1],
                     installation=installation)
-                product.save()
-                print "Added product : ", product
+                print "added product %s to %s" % (product.name, installation)
                 return product
-
 
 class Product(models.Model):
     """
     Models a woo woo product, cabin or a loo with a given quantity
     """
-    def set_rate(self):
+    def get_rate(self):
         prices = {
                 'KL1': Decimal(settings.PRICE_KL1),
                 'KL2 prm': Decimal(settings.PRICE_KL2),
@@ -250,7 +237,7 @@ class Product(models.Model):
                 'KLu': Decimal(settings.PRICE_KLU),
                 'STK': Decimal(settings.PRICE_STK),
                 }
-        self.rate = prices.get(self.name, Decimal(0))
+        return prices.get(self.name, Decimal(0))
 
 
     PRODUCT_TYPES = (
@@ -262,19 +249,12 @@ class Product(models.Model):
 
     name = models.CharField(choices=PRODUCT_TYPES, max_length=20, null=True)
     quantity = models.IntegerField(default=0, null=True)
-    rate = models.DecimalField(null=True, decimal_places=2, max_digits=7)
     #foreign key
     installation = models.ForeignKey(Installation, on_delete=models.CASCADE)
     objects = ProductManager()
 
     def __unicode__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        super(Product, self).save(*args, **kwargs) #call original save method
-        self.set_rate()
-        super(Product, self).save(*args, **kwargs) #call original save method
-
 
 from django_mailbox.signals import message_received
 from django.dispatch import receiver
