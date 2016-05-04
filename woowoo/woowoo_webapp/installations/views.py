@@ -110,7 +110,7 @@ def set_dates(request, *args, **kwargs):
             purchase_order = kf.create_purchase_order(installation.name)
             for product in installation.product_set.all():
                 if product.quantity > 0:
-                    kf.add_item(purchase_order, product.quantity, settings.SALES_CODE, product.name, product.get_rate)
+                    kf.add_item(purchase_order, product.quantity, settings.SALES_CODE, product.name, product.get_rate())
             kf.add_note(purchase_order,
                     'Delivery Address:\n%s, \n%s, \n%s, \n%s, \n%s, \n%s' % (installation.name,
                                                                  installation.address_one,
